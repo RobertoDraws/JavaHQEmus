@@ -102,8 +102,11 @@ public class HQ_API {
                         int advancing = jsonObject.get("advancingPlayersCount").getAsInt();
                         int eliminated = jsonObject.get("eliminatedPlayersCount").getAsInt();
 
-                        if(!correct)
-                            inTheGame = false;
+                        if(!correct) {
+                            String json = String.format("{\"type\": \"useExtraLife\", \"broadcastId\": %d, \"questionId\": %d}", currentBroadcast.broadcastId, lastQuestion.questionId);
+                            System.out.println("Sending Extra Life Request: " + json);
+                            ws.send(json);
+                        }
 
                         if(display)
                             System.out.println("Advancing Users: " + advancing + ", Eliminated Users: " + eliminated);
