@@ -18,6 +18,8 @@ import java.util.*;
 //https://gimmeproxy.com/api/getProxy?api_key=95ad3d1e-703c-4cbe-964a-4a5f81d14565&supportsHttps=true
 
 public class HQ_API {
+    public static int totalBotsInTheGame = 0;
+
     public boolean display = false;
     public boolean inTheGame = false;
 
@@ -68,6 +70,7 @@ public class HQ_API {
     }
 
     public void openWebSocket(String url){
+        totalBotsInTheGame = 0;
         try {
             Map<String, String> _headers = new HashMap<>();
             _headers.put("Authorization","Bearer " + bearer);
@@ -76,6 +79,8 @@ public class HQ_API {
                 @Override
                 public void onOpen(ServerHandshake serverHandshake) {
                     System.out.println("Established connection to: " + url);
+                    incTotalBotsInTheGame();
+
                     inTheGame = true;
 
                     if(display){
@@ -103,6 +108,7 @@ public class HQ_API {
                         int eliminated = jsonObject.get("eliminatedPlayersCount").getAsInt();
 
                         if(!correct) {
+                            decTotalBotsInTheGame();
                             new Thread(() -> {
                                 String json = String.format("{\"type\": \"useExtraLife\", \"broadcastId\": %d, \"questionId\": %d}", currentBroadcast.broadcastId, lastQuestion.questionId);
                                 System.out.println("Sending Extra Life Request: " + json);
@@ -117,6 +123,7 @@ public class HQ_API {
 
                 @Override
                 public void onClose(int i, String s, boolean b) {
+                    inTheGame = false;
                     System.out.println("Connection closed: " + s);
                 }
 
@@ -129,6 +136,16 @@ public class HQ_API {
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void incTotalBotsInTheGame(){
+        totalBotsInTheGame++;
+        MainGUI.botsStillInLabelText = String.format("Bots Still In: %d/%d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size());
+    }
+
+    private void decTotalBotsInTheGame(){
+        totalBotsInTheGame--;
+        MainGUI.botsStillInLabelText = String.format("Bots Still In: %d/%d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size());
     }
 
     private void startHeartbeat(){
@@ -151,12 +168,14 @@ public class HQ_API {
 
     public void onNextQuestion(HQQuestionData qdata){
         lastQuestion = qdata;
-
-        Main.gui.setQuestion(qdata.question);
+        MainGUI.questionText = qdata.question;
+        MainGUI.answerBtn1Text = qdata.answers.get(0).text;
+        MainGUI.answerBtn2Text = qdata.answers.get(1).text;
+        MainGUI.answerBtn3Text = qdata.answers.get(2).text;
     }
 
     public void sendAnswer(HQAnswer answer){
-        if(currentBroadcast != null && ws != null && ws.isOpen() && inTheGame) {
+        if(ws != null && ws.isOpen() && inTheGame) {
             String data = String.format("{\"type\": \"answer\", \"broadcastId\": %d, \"answerId\": %d, \"questionId\": %d}",
                 currentBroadcast.broadcastId, answer.answerId, lastQuestion.questionId);
 

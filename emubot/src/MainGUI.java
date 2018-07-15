@@ -3,6 +3,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainGUI {
+    public static String questionText = "Question";
+    public static String answerBtn1Text = "Answer 1";
+    public static String answerBtn2Text = "Answer 2";
+    public static String answerBtn3Text = "Answer 3";
+    public static String botsLoadedLabelText = "Bots Loaded: 0";
+    public static String botsStillInLabelText = "Bots Still In: 0/0";
+
     private JButton answerbutton1;
     private JButton answerbutton2;
     private JButton answerbutton3;
@@ -14,11 +21,14 @@ public class MainGUI {
     private JButton startButton;
     private JButton stopButton;
     private JButton splitButton;
+    private JLabel botsLoadedLabel;
+    private JLabel botsStillInLabel;
 
     public MainGUI(){
         answerbutton1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 for(HQ_API hqclient : Main.HQAccounts){
+                    System.out.println("Sending answer 1");
                     new Thread(() -> { hqclient.sendAnswer(HQ_API.lastQuestion.answers.get(0)); }).start();
                 }
             }
@@ -43,6 +53,7 @@ public class MainGUI {
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String wsurl = Main.HQAccounts.get(0).getAPIData().broadcast.socketUrl.replace("https", "wss");
+                //String wsurl = "ws://127.0.0.1:8081/";
                 for(HQ_API client : Main.HQAccounts){
                     new Thread(() -> {client.openWebSocket(wsurl);}).start();
                 }
@@ -84,6 +95,40 @@ public class MainGUI {
                 new HQ_API("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIxMTcyNTYxLCJ1c2VybmFtZSI6IlJvYmVydG9EcmF3c0dPRCIsImF2YXRhclVybCI6InMzOi8vaHlwZXNwYWNlLXF1aXovZGVmYXVsdF9hdmF0YXJzL1VudGl0bGVkLTFfMDAwMV9ibHVlLnBuZyIsInRva2VuIjoicFNFRkV1Iiwicm9sZXMiOltdLCJjbGllbnQiOiIiLCJndWVzdElkIjpudWxsLCJ2IjoxLCJpYXQiOjE1MzAwODExMzMsImV4cCI6MTUzNzg1NzEzMywiaXNzIjoiaHlwZXF1aXovMSJ9.JIBJG0qhZ_AnmQMG46mrSVTJZH4CqvcAh7rdhYit-wc").cashout(Cashout.getText());
             }
         });
+
+        //really fucking hacky way to change the text of the gui components
+        new Thread(() -> {
+            try {
+                String lastQuestionText = questionText;
+                String lastAnswerBtn1Text = answerBtn1Text;
+                String lastAnswerBtn2Text = answerBtn2Text;
+                String lastAnswerBtn3Text = answerBtn2Text;
+                String lastBotsLoadedLabelText = botsLoadedLabelText;
+                String lastBotsStillInLabelText = botsStillInLabelText;
+                while (true) {
+                    if (!lastQuestionText.equals(questionText)) {
+                        questionLabel.setText(questionText);
+                        lastQuestionText = questionText;
+                    } else if (!lastAnswerBtn1Text.equals(answerBtn1Text)) {
+                        answerbutton1.setText(answerBtn1Text);
+                        lastAnswerBtn1Text = answerBtn1Text;
+                    } else if (!lastAnswerBtn2Text.equals(answerBtn2Text)) {
+                        answerbutton2.setText(answerBtn2Text);
+                        lastAnswerBtn2Text = answerBtn2Text;
+                    } else if (!lastAnswerBtn3Text.equals(answerBtn3Text)) {
+                        answerbutton3.setText(answerBtn3Text);
+                        lastAnswerBtn3Text = answerBtn3Text;
+                    } else if (!lastBotsLoadedLabelText.equals(botsLoadedLabelText)){
+                        botsLoadedLabel.setText(botsLoadedLabelText);
+                        lastBotsLoadedLabelText = botsLoadedLabelText;
+                    } else if (!lastBotsStillInLabelText.equals(botsStillInLabelText)){
+                        botsStillInLabel.setText(botsStillInLabelText);
+                        lastBotsStillInLabelText = botsStillInLabelText;
+                    }
+                    Thread.sleep(10);
+                }
+            } catch(Exception e){}
+        }).start();
     }
 
     public void setQuestion(String text){
