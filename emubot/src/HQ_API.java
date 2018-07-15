@@ -161,6 +161,7 @@ public class HQ_API {
     public static String EndpointAWS = EndpointBase + "credentials/s3";
     public static String EndpointMakeItRain = EndpointEasterEggs + "makeItRain/";
     public static String EndpointTokens     = EndpointBase + "tokens/";
+
 }
 
 class HQAPIData
