@@ -3,8 +3,7 @@ import org.java_websocket.*;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 
 import java.net.URI;
@@ -108,6 +107,19 @@ public class HQ_API {
         }
     }
 
+    private void startHeartbeat(){
+        new Thread(() -> {
+            try {
+                while (ws != null && ws.isOpen()) {
+                    ws.sendPing();
+                    Thread.sleep(10000);
+                }
+            } catch(Exception e){
+                System.out.println("Failed to send heartbeat.");
+            }
+        }).start();
+    }
+
     public void closeWebSocket(){
         if(ws != null && ws.isOpen())
             ws.close();
@@ -123,26 +135,30 @@ public class HQ_API {
         if(ws != null && ws.isOpen()) {
             HQAPIData apiData = getAPIData();
             String data = String.format("{type: 'answer', broadcastId: %d, answerId: %d, questionId: %d}",
-                    /*apiData.broadcast.broadcastId*/ 0, answer.answerId, lastQuestion.questionId);
-            System.out.println("Sending data: " + data);
+                    apiData.broadcast.broadcastId, answer.answerId, lastQuestion.questionId);
+
+            if(display)
+                System.out.println("Sending data: " + data);
             ws.send(data);
         }
     }
 
-    public void sendPing(){
-        if(ws != null && ws.isOpen()){
-            System.out.println("Sending ping.");
-            ws.sendPing();
-        }
+    //TODO: Finish cashout functionality
+    public boolean cashout(String email){
+        String json = String.format("{\"email\": \"%s\"}", email);
+        String req = HttpPost("https://api-quiz.hype.space/users/me", json);
+        System.out.println(req);
+
+        return true;
     }
 
     public HQAPIData getAPIData(){
-        String apiResp = HTTPGet(EndpointSchedule);
+        String apiResp = HttpGet(EndpointSchedule);
         HQAPIData data = new Gson().fromJson(apiResp, HQAPIData.class);
         return data;
     }
 
-    public String HTTPGet(String targetUrl) {
+    private String HttpGet(String targetUrl) {
         HttpURLConnection conn = null;
 
         try{
@@ -151,6 +167,7 @@ public class HQ_API {
             conn.setRequestMethod("GET");
 
             conn.setRequestProperty("User-Agent", "okhttp/3.8.0");
+            conn.setRequestProperty("Authorization", "Bearer " + bearer);
             conn.setRequestProperty("x-hq-client", "Android/1.8.1");
             conn.setRequestProperty("x-hq-country", countrycode);
             conn.setRequestProperty("x-hq-lang", "en");
@@ -170,6 +187,58 @@ public class HQ_API {
             System.out.println("You don fucked up: " + e.getMessage());
         }
         return "err";
+    }
+
+    private String HttpPost(String targetUrl, String request){
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL(targetUrl);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("User-Agent", "okhttp/3.8.0");
+            conn.setRequestProperty("authorization", "Bearer " + bearer);
+            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("x-hq-client", "Android/1.8.1");
+            conn.setRequestProperty("x-hq-country", countrycode);
+            conn.setRequestProperty("x-hq-lang", "en");
+            conn.setRequestProperty("x-hq-stk", getSTK());
+
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(os, "UTF-8"));
+            writer.write(request);
+            writer.flush();
+            writer.close();
+            os.close();
+
+            conn.connect();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuffer resp = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                resp.append(inputLine);
+            }
+            in.close();
+
+            return resp.toString();
+        } catch(Exception e){
+            try {
+                StringBuffer resp = new StringBuffer();
+                BufferedReader error = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                String errorLine;
+                while ((errorLine = error.readLine()) != null) {
+                    resp.append(errorLine);
+                }
+                return resp.toString();
+            } catch(Exception ex){
+                return "oof";
+            }
+        }
     }
 
     private String getSTK() {

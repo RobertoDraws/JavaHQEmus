@@ -51,15 +51,15 @@ public class MainGUI {
 
         stopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                for(HQ_API clients : Main.HQAccounts){
-                    clients.closeWebSocket();
+                for(HQ_API client : Main.HQAccounts){
+                    client.closeWebSocket();
                 }
             }
         });
 
         conf_cashout.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //confirm cashout btn clicked
+                Main.HQAccounts.get(0).cashout(Cashout.getText());
             }
         });
     }
