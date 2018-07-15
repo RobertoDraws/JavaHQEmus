@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/emubot.iml" filepath="$PROJECT_DIR$/.idea/emubot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/emubot/src.iml" filepath="$PROJECT_DIR$/emubot/src.iml" />
     </modules>
   </component>
 </project>
