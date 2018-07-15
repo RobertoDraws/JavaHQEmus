@@ -1,4 +1,7 @@
+import org.omg.CORBA.Environment;
+
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -12,11 +15,9 @@ public class Main {
         gui = new MainGUI();
         gui.main(args);
 
-        ArrayList<HQ_API> HQAccounts = new ArrayList<>();
-
         try{
             //should add separate files later
-            Scanner s = new Scanner(new File("tokens.txt"));
+            Scanner s = new Scanner(new File("Jake.txt"));
             while(s.hasNextLine() && HQAccounts.size() < accountsLimit){
                 HQAccounts.add(new HQ_API(s.nextLine()));
             }
