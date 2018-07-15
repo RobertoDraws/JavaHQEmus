@@ -19,15 +19,19 @@ import java.util.*;
 
 public class HQ_API {
     public boolean display = false;
+    public boolean inTheGame = false;
 
+    private String username;
     private String bearer;
     private String countrycode = "US";
     public static HQQuestionData lastQuestion;
+    public static BroadcastData currentBroadcast;
 
     private WebSocketClient ws = null;
 
     public HQ_API(String bearer_token){
         bearer = bearer_token;
+        System.out.println("Loaded account.");
     }
 
     //TODO: Unfinished function to autostart the bot when the game goes live
@@ -59,19 +63,25 @@ public class HQ_API {
     }
 
     public String getUsername(){
-        JsonObject jsonObject = new JsonParser().parse(getEndpointMe()).getAsJsonObject();
+        JsonObject jsonObject = new JsonParser().parse(HttpGet(EndpointMe)).getAsJsonObject();
         return jsonObject.get("username").getAsString();
     }
 
     public void openWebSocket(String url){
         try {
             Map<String, String> _headers = new HashMap<String, String>();
+            //_headers.put("uname", username); for testing
             _headers.put("Authorization","Bearer " + bearer);
 
             ws = new WebSocketClient(new URI(url), _headers) {
                 @Override
                 public void onOpen(ServerHandshake serverHandshake) {
                     System.out.println("Established connection to: " + url);
+                    inTheGame = true;
+
+                    if(display){
+                        currentBroadcast = getAPIData().broadcast;
+                    }
                 }
 
                 @Override
@@ -83,11 +93,20 @@ public class HQ_API {
                     String messageType = jsonObject.get("type").getAsString();
 
                     if(messageType.equals("question")){
-                        System.out.println(s);
                         HQQuestionData qdata = new Gson().fromJson(s, HQQuestionData.class);
 
                         if(display)
                             onNextQuestion(qdata);
+                    } else if(messageType.equals("questionSummary")){
+                        boolean correct = jsonObject.get("youGotItRight").getAsBoolean();
+                        int advancing = jsonObject.get("advancingPlayersCount").getAsInt();
+                        int eliminated = jsonObject.get("eliminatedPlayersCount").getAsInt();
+
+                        if(!correct)
+                            inTheGame = false;
+
+                        if(display)
+                            System.out.println("Advancing Users: " + advancing + ", Eliminated Users: " + eliminated);
                     }
                 }
 
@@ -132,10 +151,9 @@ public class HQ_API {
     }
 
     public void sendAnswer(HQAnswer answer){
-        if(ws != null && ws.isOpen()) {
-            HQAPIData apiData = getAPIData();
-            String data = String.format("{type: 'answer', broadcastId: %d, answerId: %d, questionId: %d}",
-                    apiData.broadcast.broadcastId, answer.answerId, lastQuestion.questionId);
+        if(ws != null && ws.isOpen() && inTheGame) {
+            String data = String.format("{\"type\": \"answer\", \"broadcastId\": %d, \"answerId\": %d, \"questionId\": %d}",
+                    /*apiData.broadcast.broadcastId*/0, answer.answerId, lastQuestion.questionId);
 
             if(display)
                 System.out.println("Sending data: " + data);
@@ -143,10 +161,9 @@ public class HQ_API {
         }
     }
 
-    //TODO: Finish cashout functionality
     public boolean cashout(String email){
         String json = String.format("{\"email\": \"%s\"}", email);
-        String req = HttpPost("https://api-quiz.hype.space/users/me", json);
+        String req = HttpPost(EndpointPayouts, json);
         System.out.println(req);
 
         return true;
@@ -196,7 +213,7 @@ public class HQ_API {
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("User-Agent", "okhttp/3.8.0");
-            conn.setRequestProperty("authorization", "Bearer " + bearer);
+            conn.setRequestProperty("Authorization", "Bearer " + bearer);
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("x-hq-client", "Android/1.8.1");
             conn.setRequestProperty("x-hq-country", countrycode);
@@ -269,35 +286,6 @@ public class HQ_API {
             return jsonObject.get("stk").getAsString();
         } catch (Exception e) {
             System.out.println("get stk error: " + e.getMessage());
-        }
-        return "err";
-    }
-
-    private String getEndpointMe() {
-        HttpURLConnection conn = null;
-        try {
-            URL url = new URL(EndpointMe);
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-
-            conn.setRequestProperty("User-Agent", "okhttp/3.8.0");
-            conn.setRequestProperty("x-hq-client", "Android/1.8.1");
-            conn.setRequestProperty("x-hq-country", countrycode);
-            conn.setRequestProperty("x-hq-lang", "en");
-            conn.setRequestProperty("authorization", "Bearer " + bearer);
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuffer resp = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                resp.append(inputLine);
-            }
-            in.close();
-
-            return resp.toString();
-        } catch (Exception e) {
-            System.out.println("You dun fucked up: " + e.getMessage());
         }
         return "err";
     }

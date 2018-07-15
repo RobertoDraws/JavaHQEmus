@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static int accountsLimit = 2880;
+    public static int accountsLimit = 2800;
     public static MainGUI gui;
     public static ArrayList<HQ_API> HQAccounts = new ArrayList<>();
 
@@ -22,6 +22,8 @@ public class Main {
                 HQAccounts.add(new HQ_API(s.nextLine()));
             }
             HQAccounts.get(0).display = true;
+
+            System.out.println("Finished Loading.");
         } catch(Exception e){
             e.printStackTrace();
         }
