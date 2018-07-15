@@ -8,9 +8,11 @@ public class MainGUI {
     private JButton answerbutton2;
     private JButton answerbutton3;
     private JPanel MainGUI;
+    private JTextField Cashout;
+    private JTextArea paypal;
+    private JButton conf_cashout;
 
-
-    public MainGUI() {
+    public MainGUI(){
         answerbutton1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //button 1 clicked
@@ -19,7 +21,7 @@ public class MainGUI {
 
         answerbutton2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //button 2 clickeds
+                //button 2 clicked
             }
         } );
 
@@ -28,6 +30,12 @@ public class MainGUI {
                 //button 3 clicked
             }
         } );
+
+        conf_cashout.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //confirm cashout btn clicked
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -36,9 +44,5 @@ public class MainGUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-    }
-
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
     }
 }
