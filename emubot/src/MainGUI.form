@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="MainGUI">
-  <grid id="27dc6" binding="MainGUI" layout-manager="GridLayoutManager" row-count="10" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="MainGUI" layout-manager="GridLayoutManager" row-count="10" column-count="1" same-size-horizontally="true" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="15" y="12" width="480" height="438"/>
+      <xy x="15" y="12" width="431" height="438"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -75,7 +75,9 @@
             <preferred-size width="200" height="200"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <resizeWeight value="0.5"/>
+        </properties>
         <border type="none"/>
         <children>
           <component id="b4e57" class="javax.swing.JButton" binding="startButton" default-binding="true">
@@ -110,7 +112,9 @@
             <preferred-size width="200" height="200"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <resizeWeight value="0.5"/>
+        </properties>
         <border type="none"/>
         <children>
           <component id="7fdde" class="javax.swing.JLabel" binding="botsLoadedLabel">
