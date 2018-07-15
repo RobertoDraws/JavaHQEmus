@@ -1,24 +1,89 @@
 import com.google.gson.*;
+import org.java_websocket.*;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
 public class HQ_API {
     private String bearer;
     private String countrycode = "US";
+    private HQQuestionData lastQuestion;
+
+    private WebSocketClient ws = null;
 
     public HQ_API(String bearer_token){
         bearer_token = bearer;
-        HQAPIData test = getAPIData();
-        System.out.println(test.nextShowPrize);
+        waitForNextGame();
+    }
+
+    public static void waitForNextGame(){
+
+    }
+
+    public void openWebSocket(String url){
+        try {
+            ws = new WebSocketClient(new URI(url)) {
+                @Override
+                public void onOpen(ServerHandshake serverHandshake) {
+                    System.out.println("Established connection to: " + url);
+                }
+
+                @Override
+                public void onMessage(String s) {
+                    JsonObject jsonObject = new JsonParser().parse(s).getAsJsonObject();
+                    String messageType = jsonObject.get("type").getAsString();
+
+                    if(messageType.equals("question")){
+                        HQQuestionData qdata = new Gson().fromJson(s, HQQuestionData.class);
+                        onNextQuestion(qdata);
+                    }
+                }
+
+                @Override
+                public void onClose(int i, String s, boolean b) {
+                    System.out.println("Connection closed.");
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    e.printStackTrace();
+                }
+            };
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void onNextQuestion(HQQuestionData qdata){
+        lastQuestion = qdata;
+    }
+
+    public void sendAnswer(HQAnswer answer){
+        if(ws != null && ws.isOpen()) {
+            HQAPIData apiData = getAPIData();
+            String data = String.format("{type: 'answer', broadcastId: %d, answerId: %d, questionId: %d}",
+                    apiData.broadcast.broadcastId, answer.answerId, lastQuestion.questionId);
+            System.out.println("Sending data: " + data);
+            ws.send(data);
+        }
+    }
+
+    public void sendPing(){
+        if(ws != null && ws.isOpen()){
+            System.out.println("Sending ping.");
+            ws.sendPing();
+        }
     }
 
     public HQAPIData getAPIData(){
-        String apiResp = HTTPGet("https://api-quiz.hype.space/shows/now");
+        String apiResp = HTTPGet(EndpointSchedule);
         HQAPIData data = new Gson().fromJson(apiResp, HQAPIData.class);
         return data;
     }
@@ -48,7 +113,7 @@ public class HQ_API {
 
             return resp.toString();
         } catch(Exception e){
-            System.out.println("You don fucked up: " + e.getMessage());
+            //System.out.println("You don fucked up: " + e.getMessage());
         }
         return "err";
     }
@@ -56,7 +121,7 @@ public class HQ_API {
     public String getSTK() {
         HttpURLConnection conn = null;
         try {
-            URL url = new URL("https://api-quiz.hype.space/users/me");
+            URL url = new URL(EndpointMe);
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
 
@@ -78,12 +143,24 @@ public class HQ_API {
             JsonObject jsonObject = new JsonParser().parse(resp.toString()).getAsJsonObject();
             return jsonObject.get("stk").getAsString();
         } catch (Exception e) {
-            System.out.println("You don fucked up: " + e.getMessage());
+            //System.out.println("You don fucked up: " + e.getMessage());
         }
         return "err";
     }
 
-
+    public static String EndpointBase = "https://api-quiz.hype.space/";
+    public static String EndpointUsers = EndpointBase + "users/";
+    public static String EndpointMe = EndpointUsers + "me/";
+    public static String EndpointPayouts = EndpointMe + "payouts/";
+    public static String EndpointShows = EndpointBase + "shows/";
+    public static String EndpointSchedule = EndpointShows + "now?type=hq";
+    public static String EndpointAvatarURL = EndpointMe + "avatarUrl/";
+    public static String EndpointFriends    = EndpointBase + "friends/";
+    public static String EndpointVerifications = EndpointBase + "verifications/";
+    public static String EndpointEasterEggs = EndpointBase + "easter-eggs/";
+    public static String EndpointAWS = EndpointBase + "credentials/s3";
+    public static String EndpointMakeItRain = EndpointEasterEggs + "makeItRain/";
+    public static String EndpointTokens     = EndpointBase + "tokens/";
 }
 
 class HQAPIData
@@ -109,5 +186,28 @@ class ScheduledGame
 
 class BroadcastData
 {
+    public long broadcastId;
     public String socketUrl;
+}
+
+class HQQuestionData
+{
+    public String type;
+    public String ts;
+    public long totalTimeMs;
+    public long timeLeftMs;
+    public long questionId;
+    public String question;
+    public String category;
+    public List<HQAnswer> answers;
+    public int questionNumber;
+    public int questionCount;
+    public String askTime;
+    public String sent;
+}
+
+class HQAnswer
+{
+    public long answerId;
+    public String text;
 }
