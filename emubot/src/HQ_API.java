@@ -9,22 +9,53 @@ import java.net.HttpURLConnection;
 
 import java.net.URI;
 import java.net.URL;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class HQ_API {
+    public boolean display = false;
+
     private String bearer;
     private String countrycode = "US";
-    private HQQuestionData lastQuestion;
+    public static HQQuestionData lastQuestion;
 
     private WebSocketClient ws = null;
 
     public HQ_API(String bearer_token){
-        bearer_token = bearer;
-        waitForNextGame();
+        bearer = bearer_token;
+        //waitForNextGame();
+        openWebSocket("ws://127.0.0.1:8081/");
     }
 
-    public static void waitForNextGame(){
+    public void waitForNextGame(){
+        try {
+            HQAPIData data = getAPIData();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            Date date = sdf.parse(data.nextShowTime);
 
+            new Thread(() -> {
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            HQAPIData data;
+                            while (!(data = getAPIData()).active) {
+                                Thread.sleep(30000);
+                            }
+                            openWebSocket(data.broadcast.socketUrl);
+                        } catch(Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                }, date);
+            }).start();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void openWebSocket(String url){
@@ -37,12 +68,16 @@ public class HQ_API {
 
                 @Override
                 public void onMessage(String s) {
+                    System.out.println(s);
                     JsonObject jsonObject = new JsonParser().parse(s).getAsJsonObject();
                     String messageType = jsonObject.get("type").getAsString();
 
                     if(messageType.equals("question")){
+                        System.out.println(s);
                         HQQuestionData qdata = new Gson().fromJson(s, HQQuestionData.class);
-                        onNextQuestion(qdata);
+
+                        if(display)
+                            onNextQuestion(qdata);
                     }
                 }
 
@@ -56,6 +91,7 @@ public class HQ_API {
                     e.printStackTrace();
                 }
             };
+            ws.connect();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -63,13 +99,14 @@ public class HQ_API {
 
     public void onNextQuestion(HQQuestionData qdata){
         lastQuestion = qdata;
+
     }
 
     public void sendAnswer(HQAnswer answer){
         if(ws != null && ws.isOpen()) {
             HQAPIData apiData = getAPIData();
             String data = String.format("{type: 'answer', broadcastId: %d, answerId: %d, questionId: %d}",
-                    apiData.broadcast.broadcastId, answer.answerId, lastQuestion.questionId);
+                    /*apiData.broadcast.broadcastId*/ 0, answer.answerId, lastQuestion.questionId);
             System.out.println("Sending data: " + data);
             ws.send(data);
         }
@@ -161,7 +198,6 @@ public class HQ_API {
     public static String EndpointAWS = EndpointBase + "credentials/s3";
     public static String EndpointMakeItRain = EndpointEasterEggs + "makeItRain/";
     public static String EndpointTokens     = EndpointBase + "tokens/";
-
 }
 
 class HQAPIData

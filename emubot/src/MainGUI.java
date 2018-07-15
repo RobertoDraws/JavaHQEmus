@@ -3,31 +3,37 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainGUI {
-    private JTextField questionbox;
-    private JButton answerbutton1;
-    private JButton answerbutton2;
-    private JButton answerbutton3;
-    private JPanel MainGUI;
-    private JTextField Cashout;
-    private JTextArea paypal;
-    private JButton conf_cashout;
+    public JTextField questionbox;
+    public JButton answerbutton1;
+    public JButton answerbutton2;
+    public JButton answerbutton3;
+    public JPanel MainGUI;
+    public JTextField Cashout;
+    public JTextArea paypal;
+    public JButton conf_cashout;
 
     public MainGUI(){
         answerbutton1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //button 1 clicked
+                for(HQ_API hqclient : Main.HQAccounts){
+                    hqclient.sendAnswer(HQ_API.lastQuestion.answers.get(0));
+                }
             }
         } );
 
         answerbutton2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //button 2 clicked
+                for(HQ_API hqclient : Main.HQAccounts){
+                    hqclient.sendAnswer(HQ_API.lastQuestion.answers.get(0));
+                }
             }
         } );
 
         answerbutton3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //button 3 clicked
+                for(HQ_API hqclient : Main.HQAccounts){
+                    hqclient.sendAnswer(HQ_API.lastQuestion.answers.get(0));
+                }
             }
         } );
 
