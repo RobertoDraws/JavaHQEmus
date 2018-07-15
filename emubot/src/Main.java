@@ -12,13 +12,10 @@ public class Main {
         gui = new MainGUI();
         gui.main(args);
 
-        HQAccounts.add(new HQ_API("test"));
-        HQAccounts.get(0).display = true;
-
-        /*
         ArrayList<HQ_API> HQAccounts = new ArrayList<>();
 
-        try {
+        try{
+            //should add separate files later
             Scanner s = new Scanner(new File("tokens.txt"));
             while(s.hasNextLine() && HQAccounts.size() < accountsLimit){
                 HQAccounts.add(new HQ_API(s.nextLine()));
@@ -27,6 +24,5 @@ public class Main {
         } catch(Exception e){
             e.printStackTrace();
         }
-        */
     }
 }

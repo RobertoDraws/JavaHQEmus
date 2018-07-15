@@ -3,14 +3,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainGUI {
-    public JTextField questionbox;
-    public JButton answerbutton1;
-    public JButton answerbutton2;
-    public JButton answerbutton3;
-    public JPanel MainGUI;
-    public JTextField Cashout;
-    public JTextArea paypal;
-    public JButton conf_cashout;
+    private JButton answerbutton1;
+    private JButton answerbutton2;
+    private JButton answerbutton3;
+    private JPanel MainGUI;
+    private JTextField Cashout;
+    private JTextArea paypal;
+    private JButton conf_cashout;
+    private JLabel questionLabel;
 
     public MainGUI(){
         answerbutton1.addActionListener(new ActionListener() {
@@ -24,7 +24,7 @@ public class MainGUI {
         answerbutton2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 for(HQ_API hqclient : Main.HQAccounts){
-                    hqclient.sendAnswer(HQ_API.lastQuestion.answers.get(0));
+                    hqclient.sendAnswer(HQ_API.lastQuestion.answers.get(1));
                 }
             }
         } );
@@ -32,7 +32,7 @@ public class MainGUI {
         answerbutton3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 for(HQ_API hqclient : Main.HQAccounts){
-                    hqclient.sendAnswer(HQ_API.lastQuestion.answers.get(0));
+                    hqclient.sendAnswer(HQ_API.lastQuestion.answers.get(2));
                 }
             }
         } );
@@ -44,11 +44,20 @@ public class MainGUI {
         });
     }
 
+    public void setQuestion(String text){
+        questionLabel.setText(text);
+        questionLabel.updateUI();
+    }
+
     public static void main(String[] args) {
         JFrame frame = new JFrame("MainGUI");
         frame.setContentPane(new MainGUI().MainGUI);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+    }
+
+    private void createUIComponents() {
+        questionLabel = new JLabel("Question");
     }
 }

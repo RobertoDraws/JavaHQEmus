@@ -100,6 +100,7 @@ public class HQ_API {
     public void onNextQuestion(HQQuestionData qdata){
         lastQuestion = qdata;
 
+        Main.gui.setQuestion(qdata.question);
     }
 
     public void sendAnswer(HQAnswer answer){

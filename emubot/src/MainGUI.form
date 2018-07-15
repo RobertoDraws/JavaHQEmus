@@ -8,30 +8,12 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="6dc2f" class="javax.swing.JTextField" binding="questionbox">
-        <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties>
-          <text value="Question"/>
-        </properties>
-      </component>
-      <component id="f7fdb" class="javax.swing.JButton" binding="answerbutton1">
-        <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Answer 1"/>
-        </properties>
-      </component>
       <component id="8b463" class="javax.swing.JButton" binding="answerbutton2">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Answer 1"/>
+          <text value="Answer 2"/>
         </properties>
       </component>
       <component id="4ea85" class="javax.swing.JButton" binding="answerbutton3">
@@ -69,6 +51,22 @@
         </constraints>
         <properties>
           <text value="Confirm Cashout"/>
+        </properties>
+      </component>
+      <component id="f7fdb" class="javax.swing.JButton" binding="answerbutton1">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Answer 1"/>
+        </properties>
+      </component>
+      <component id="6f31a" class="javax.swing.JLabel" binding="questionLabel" custom-create="true">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Question"/>
         </properties>
       </component>
     </children>
