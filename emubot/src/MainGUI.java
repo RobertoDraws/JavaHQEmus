@@ -42,7 +42,7 @@ public class MainGUI {
 
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String wsurl = "ws://127.0.0.1:8081/"; /*Main.HQAccounts.get(0).getAPIData().broadcast.socketUrl.replace("https", "wss")*/
+                String wsurl = Main.HQAccounts.get(0).getAPIData().broadcast.socketUrl.replace("https", "wss");
                 for(HQ_API client : Main.HQAccounts){
                     new Thread(() -> {client.openWebSocket(wsurl);}).start();
                 }

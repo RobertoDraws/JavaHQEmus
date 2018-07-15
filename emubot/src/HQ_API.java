@@ -69,8 +69,7 @@ public class HQ_API {
 
     public void openWebSocket(String url){
         try {
-            Map<String, String> _headers = new HashMap<String, String>();
-            //_headers.put("uname", username); for testing
+            Map<String, String> _headers = new HashMap<>();
             _headers.put("Authorization","Bearer " + bearer);
 
             ws = new WebSocketClient(new URI(url), _headers) {
@@ -82,6 +81,7 @@ public class HQ_API {
                     if(display){
                         currentBroadcast = getAPIData().broadcast;
                     }
+                    startHeartbeat();
                 }
 
                 @Override
@@ -112,7 +112,7 @@ public class HQ_API {
 
                 @Override
                 public void onClose(int i, String s, boolean b) {
-                    System.out.println("Connection closed.");
+                    System.out.println("Connection closed: " + s);
                 }
 
                 @Override
@@ -151,9 +151,9 @@ public class HQ_API {
     }
 
     public void sendAnswer(HQAnswer answer){
-        if(ws != null && ws.isOpen() && inTheGame) {
+        if(currentBroadcast != null && ws != null && ws.isOpen() && inTheGame) {
             String data = String.format("{\"type\": \"answer\", \"broadcastId\": %d, \"answerId\": %d, \"questionId\": %d}",
-                    /*apiData.broadcast.broadcastId*/0, answer.answerId, lastQuestion.questionId);
+                currentBroadcast.broadcastId, answer.answerId, lastQuestion.questionId);
 
             if(display)
                 System.out.println("Sending data: " + data);
