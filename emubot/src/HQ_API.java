@@ -16,6 +16,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+//https://gimmeproxy.com/api/getProxy?api_key=95ad3d1e-703c-4cbe-964a-4a5f81d14565&supportsHttps=true
+
 public class HQ_API {
     public boolean display = false;
 
@@ -27,10 +29,9 @@ public class HQ_API {
 
     public HQ_API(String bearer_token){
         bearer = bearer_token;
-        //waitForNextGame();
-        openWebSocket("ws://127.0.0.1:8081/");
     }
 
+    //TODO: Unfinished function to autostart the bot when the game goes live
     public void waitForNextGame(){
         try {
             HQAPIData data = getAPIData();
@@ -58,9 +59,17 @@ public class HQ_API {
         }
     }
 
+    public String getUsername(){
+        JsonObject jsonObject = new JsonParser().parse(getEndpointMe()).getAsJsonObject();
+        return jsonObject.get("username").getAsString();
+    }
+
     public void openWebSocket(String url){
         try {
-            ws = new WebSocketClient(new URI(url)) {
+            Map<String, String> _headers = new HashMap<String, String>();
+            _headers.put("Authorization","Bearer " + bearer);
+
+            ws = new WebSocketClient(new URI(url), _headers) {
                 @Override
                 public void onOpen(ServerHandshake serverHandshake) {
                     System.out.println("Established connection to: " + url);
@@ -68,7 +77,9 @@ public class HQ_API {
 
                 @Override
                 public void onMessage(String s) {
-                    System.out.println(s);
+                    if(display)
+                        System.out.println(s);
+
                     JsonObject jsonObject = new JsonParser().parse(s).getAsJsonObject();
                     String messageType = jsonObject.get("type").getAsString();
 
@@ -95,6 +106,11 @@ public class HQ_API {
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public void closeWebSocket(){
+        if(ws != null && ws.isOpen())
+            ws.close();
     }
 
     public void onNextQuestion(HQQuestionData qdata){
@@ -151,12 +167,12 @@ public class HQ_API {
 
             return resp.toString();
         } catch(Exception e){
-            //System.out.println("You don fucked up: " + e.getMessage());
+            System.out.println("You don fucked up: " + e.getMessage());
         }
         return "err";
     }
 
-    public String getSTK() {
+    private String getSTK() {
         HttpURLConnection conn = null;
         try {
             URL url = new URL(EndpointMe);
@@ -178,13 +194,45 @@ public class HQ_API {
             }
             in.close();
 
+            System.out.println(resp.toString());
+
             JsonObject jsonObject = new JsonParser().parse(resp.toString()).getAsJsonObject();
             return jsonObject.get("stk").getAsString();
         } catch (Exception e) {
-            //System.out.println("You don fucked up: " + e.getMessage());
+            System.out.println("get stk error: " + e.getMessage());
         }
         return "err";
     }
+
+    private String getEndpointMe() {
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL(EndpointMe);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            conn.setRequestProperty("User-Agent", "okhttp/3.8.0");
+            conn.setRequestProperty("x-hq-client", "Android/1.8.1");
+            conn.setRequestProperty("x-hq-country", countrycode);
+            conn.setRequestProperty("x-hq-lang", "en");
+            conn.setRequestProperty("authorization", "Bearer " + bearer);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuffer resp = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                resp.append(inputLine);
+            }
+            in.close();
+
+            return resp.toString();
+        } catch (Exception e) {
+            System.out.println("You dun fucked up: " + e.getMessage());
+        }
+        return "err";
+    }
+
 
     public static String EndpointBase = "https://api-quiz.hype.space/";
     public static String EndpointUsers = EndpointBase + "users/";

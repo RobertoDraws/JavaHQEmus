@@ -11,6 +11,8 @@ public class MainGUI {
     private JTextArea paypal;
     private JButton conf_cashout;
     private JLabel questionLabel;
+    private JButton startButton;
+    private JButton stopButton;
 
     public MainGUI(){
         answerbutton1.addActionListener(new ActionListener() {
@@ -36,6 +38,24 @@ public class MainGUI {
                 }
             }
         } );
+
+        startButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String wsurl = Main.HQAccounts.get(0).getAPIData().broadcast.socketUrl.replace("https", "wss");
+                for(HQ_API client : Main.HQAccounts){
+                    new Thread(() -> {client.openWebSocket(wsurl);}).start();
+                }
+                Main.HQAccounts.get(0).display = true;
+            }
+        });
+
+        stopButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                for(HQ_API clients : Main.HQAccounts){
+                    clients.closeWebSocket();
+                }
+            }
+        });
 
         conf_cashout.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
