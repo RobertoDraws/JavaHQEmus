@@ -19,7 +19,7 @@ public class MainGUI {
 
         answerbutton2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //button 2 clicked
+                //button 2 clickeds
             }
         } );
 
