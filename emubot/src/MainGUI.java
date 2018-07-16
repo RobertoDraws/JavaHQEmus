@@ -92,7 +92,9 @@ public class MainGUI {
 
         conf_cashout.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new HQ_API("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIxMTcyNTYxLCJ1c2VybmFtZSI6IlJvYmVydG9EcmF3c0dPRCIsImF2YXRhclVybCI6InMzOi8vaHlwZXNwYWNlLXF1aXovZGVmYXVsdF9hdmF0YXJzL1VudGl0bGVkLTFfMDAwMV9ibHVlLnBuZyIsInRva2VuIjoicFNFRkV1Iiwicm9sZXMiOltdLCJjbGllbnQiOiIiLCJndWVzdElkIjpudWxsLCJ2IjoxLCJpYXQiOjE1MzAwODExMzMsImV4cCI6MTUzNzg1NzEzMywiaXNzIjoiaHlwZXF1aXovMSJ9.JIBJG0qhZ_AnmQMG46mrSVTJZH4CqvcAh7rdhYit-wc").cashout(Cashout.getText());
+                for(HQ_API client : Main.HQAccounts){
+                    new Thread(() -> { client.cashout(Cashout.getText()); }).start();
+                }
             }
         });
 

@@ -185,6 +185,11 @@ public class HQ_API {
         }
     }
 
+    public void extraLife(){
+        String req = HttpPost(EndpointMakeItRain, "");
+        System.out.println(req);
+    }
+
     public boolean cashout(String email){
         String json = String.format("{\"email\": \"%s\"}", email);
         String req = HttpPost(EndpointPayouts, json);
