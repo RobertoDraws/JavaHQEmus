@@ -18,6 +18,7 @@ import java.util.*;
 //https://gimmeproxy.com/api/getProxy?api_key=95ad3d1e-703c-4cbe-964a-4a5f81d14565&supportsHttps=true
 
 public class HQ_API {
+    public static int totalGamesFinished = 0;
     public static int totalWinners = 0;
     public static int totalBotsInTheGame = 0;
 
@@ -70,6 +71,16 @@ public class HQ_API {
         return jsonObject.get("username").getAsString();
     }
 
+    public double getBalance(){
+        JsonObject jsonObject = new JsonParser().parse(HttpGet(EndpointPayouts)).getAsJsonObject();
+        return Double.parseDouble(jsonObject.getAsJsonObject("balance").get("prizeTotal").getAsString().replaceAll("\\D+",""));
+    }
+
+    public char getCountryChar(){
+        JsonObject jsonObject = new JsonParser().parse(HttpGet(EndpointPayouts)).getAsJsonObject();
+        return jsonObject.getAsJsonObject("balance").get("prizeTotal").getAsString().charAt(0);
+    }
+
     public void openWebSocket(String url){
         totalWinners = 0;
         totalBotsInTheGame = 0;
@@ -83,6 +94,7 @@ public class HQ_API {
                     System.out.println("Established connection to: " + url);
                     incTotalBotsInTheGame();
 
+                    totalGamesFinished = 0;
                     inTheGame = true;
 
                     if(display){
@@ -93,18 +105,20 @@ public class HQ_API {
 
                 @Override
                 public void onMessage(String s) {
-                    if(display)
-                        System.out.println(s);
-
                     JsonObject jsonObject = new JsonParser().parse(s).getAsJsonObject();
                     String messageType = jsonObject.get("type").getAsString();
 
+                    if(display && !messageType.equals("interaction"))
+                        System.out.println(s);
+
                     if(messageType.equals("question")){
+                        Main.gui.resetButtons();
                         HQQuestionData qdata = new Gson().fromJson(s, HQQuestionData.class);
 
                         if(display)
                             onNextQuestion(qdata);
                     } else if(messageType.equals("questionSummary")){
+                        Main.gui.resetButtons();
                         boolean correct = jsonObject.get("youGotItRight").getAsBoolean();
                         int advancing = jsonObject.get("advancingPlayersCount").getAsInt();
                         int eliminated = jsonObject.get("eliminatedPlayersCount").getAsInt();
@@ -129,12 +143,14 @@ public class HQ_API {
                         boolean youWon = jsonObject.get("youWon").getAsBoolean();
                         if(youWon)
                             totalWinners++;
+                        totalGamesFinished++;
 
+                        System.out.println(totalGamesFinished);
                         if(display){
                             new Thread(() -> {
                                 try {
-                                    Thread.sleep(5000);
-                                    //Main.gui.sendDialogBox("You won on " + totalWinners + " accounts.");
+                                    Thread.sleep(3000);
+                                    Main.gui.sendDialogBox("You won on " + totalWinners + " accounts.");
                                 } catch(Exception e){e.printStackTrace();}
                             });
                         }
@@ -160,12 +176,12 @@ public class HQ_API {
 
     private void incTotalBotsInTheGame(){
         totalBotsInTheGame++;
-        //MainGUI.botsStillInLabelText = String.format("Bots Still In: %d/%d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size());
+        Main.gui.setTotalConnAccounts(String.format("%d / %d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size()));
     }
 
     private void decTotalBotsInTheGame(){
         totalBotsInTheGame--;
-        //MainGUI.botsStillInLabelText = String.format("Bots Still In: %d/%d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size());
+        Main.gui.setTotalConnAccounts(String.format("%d / %d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size()));
     }
 
     private void startHeartbeat(){
@@ -188,10 +204,10 @@ public class HQ_API {
 
     public void onNextQuestion(HQQuestionData qdata){
         lastQuestion = qdata;
-        //MainGUI.questionText = qdata.question;
-        //MainGUI.answerBtn1Text = qdata.answers.get(0).text;
-        //MainGUI.answerBtn2Text = qdata.answers.get(1).text;
-        //MainGUI.answerBtn3Text = qdata.answers.get(2).text;
+        Main.gui.setQuestionText(qdata.question);
+        Main.gui.setAnswer1Text(qdata.answers.get(0).text);
+        Main.gui.setAnswer2Text(qdata.answers.get(1).text);
+        Main.gui.setAnswer3Text(qdata.answers.get(2).text);
     }
 
     public void sendAnswer(HQAnswer answer){
@@ -328,8 +344,6 @@ public class HQ_API {
                 resp.append(inputLine);
             }
             in.close();
-
-            System.out.println(resp.toString());
 
             JsonObject jsonObject = new JsonParser().parse(resp.toString()).getAsJsonObject();
             return jsonObject.get("stk").getAsString();

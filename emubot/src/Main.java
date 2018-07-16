@@ -22,8 +22,8 @@ public class Main {
             Scanner s = new Scanner(new File("tokens.txt"));
             while(s.hasNextLine() && HQAccounts.size() < accountsLimit){
                 HQAccounts.add(new HQ_API(s.nextLine()));
-                //gui.setTotalAccountsText(HQAccounts.size()+"");
-                //gui.setTotalConnAccounts(String.format("%d/%d", HQ_API.totalBotsInTheGame, HQAccounts.size())
+                gui.setTotalAccountsText(HQAccounts.size()+"");
+                gui.setTotalConnAccounts(String.format("%d / %d", HQ_API.totalBotsInTheGame, HQAccounts.size()));
             }
             HQAccounts.get(0).display = true;
         } catch(Exception e){

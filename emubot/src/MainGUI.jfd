@@ -6,7 +6,7 @@ new FormModel {
 		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 			"$layoutConstraints": "fillx,hidemode 3"
 			"$columnConstraints": "[271,fill][171,fill][252,fill][229,fill][fill]"
-			"$rowConstraints": "[40][44][45][48][46][50][42][45]"
+			"$rowConstraints": "[40][44][45][48][46][50][42][45][]"
 		} ) {
 			name: "this"
 			add( new FormComponent( "javax.swing.JLabel" ) {
@@ -22,8 +22,8 @@ new FormModel {
 				"value": "cell 1 0,align center center,grow 0 0"
 			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
-				name: "questionresponce"
-				"text": "Question"
+				name: "questionResponse"
+				"text": "<html>Question</html>"
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 2 0,align center center,grow 0 0"
 			} )
@@ -47,7 +47,7 @@ new FormModel {
 			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
 				name: "totalaccounts"
-				"text": "{responce}"
+				"text": "{response}"
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 1 1,align center center,grow 0 0"
 			} )
@@ -60,6 +60,7 @@ new FormModel {
 			add( new FormComponent( "javax.swing.JToggleButton" ) {
 				name: "Toggle_Answer1"
 				"text": "Answer 1"
+				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "Answer1Clicked", true ) )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 3 1,align center center,grow 0 0"
 			} )
@@ -76,8 +77,8 @@ new FormModel {
 				"value": "cell 0 2,align center center,grow 0 0"
 			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
-				name: "label11"
-				"text": "{responce}"
+				name: "totalConnAccounts"
+				"text": "{response}"
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 1 2,align center center,grow 0 0"
 			} )
@@ -90,6 +91,7 @@ new FormModel {
 			add( new FormComponent( "javax.swing.JToggleButton" ) {
 				name: "Toggle_Answer2"
 				"text": "Answer 2"
+				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "Answer2Clicked", true ) )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 3 2,align center center,grow 0 0"
 			} )
@@ -102,6 +104,7 @@ new FormModel {
 			add( new FormComponent( "javax.swing.JToggleButton" ) {
 				name: "toggleButton1"
 				"text": "Toggle Web Connection"
+				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "toggleConnectionClicked", true ) )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 0 3,align center center,grow 0 0"
 			} )
@@ -114,6 +117,7 @@ new FormModel {
 			add( new FormComponent( "javax.swing.JToggleButton" ) {
 				name: "Toggle_Answer3"
 				"text": "Answer 3"
+				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "Answer3Clicked", true ) )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 3 3,align center center,grow 0 0"
 			} )
@@ -124,8 +128,8 @@ new FormModel {
 				"value": "cell 4 3,align center center,grow 0 0"
 			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
-				name: "label14"
-				"text": "Balance: Balance Responce"
+				name: "balanceLabel"
+				"text": "Balance: {response}"
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 0 4,align center center,grow 0 0"
 			} )
@@ -138,6 +142,7 @@ new FormModel {
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "button4"
 				"text": "Update Balance"
+				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "updateBalanceClicked", true ) )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 0 5,align center center,grow 0 0"
 			} )
@@ -151,7 +156,6 @@ new FormModel {
 				name: "Open_Google_Search"
 				"text": "Google Search"
 				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "openGoogleSearchMouseClicked", true ) )
-				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "openGoogleSearchMouseClicked", true ) )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 1 6,align center center,grow 0 0"
 			} )
@@ -163,8 +167,9 @@ new FormModel {
 				"value": "cell 2 6,align center center,grow 0 0"
 			} )
 			add( new FormComponent( "javax.swing.JButton" ) {
-				name: "getmoreemulives"
+				name: "moreEmuLivesButton"
 				"text": "Get More Emulator Lives"
+				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "moreEmuLivesButtonClicked", true ) )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 3 6,align center center,grow 0 0"
 			} )
@@ -192,7 +197,7 @@ new FormModel {
 				"value": "cell 3 7,align center center,grow 0 0"
 			} )
 		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 5, 0 )
+			"location": new java.awt.Point( 6, 6 )
 			"size": new java.awt.Dimension( 1370, 365 )
 		} )
 	}
