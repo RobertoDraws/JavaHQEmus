@@ -18,6 +18,7 @@ import java.util.*;
 //https://gimmeproxy.com/api/getProxy?api_key=95ad3d1e-703c-4cbe-964a-4a5f81d14565&supportsHttps=true
 
 public class HQ_API {
+    public static int totalWinners = 0;
     public static int totalBotsInTheGame = 0;
 
     public boolean display = false;
@@ -70,6 +71,7 @@ public class HQ_API {
     }
 
     public void openWebSocket(String url){
+        totalWinners = 0;
         totalBotsInTheGame = 0;
         try {
             Map<String, String> _headers = new HashMap<>();
@@ -106,18 +108,36 @@ public class HQ_API {
                         boolean correct = jsonObject.get("youGotItRight").getAsBoolean();
                         int advancing = jsonObject.get("advancingPlayersCount").getAsInt();
                         int eliminated = jsonObject.get("eliminatedPlayersCount").getAsInt();
+                        int extraLives = jsonObject.get("extraLivesRemaining").getAsInt();
 
                         if(!correct) {
-                            decTotalBotsInTheGame();
-                            new Thread(() -> {
-                                String json = String.format("{\"type\": \"useExtraLife\", \"broadcastId\": %d, \"questionId\": %d}", currentBroadcast.broadcastId, lastQuestion.questionId);
-                                System.out.println("Sending Extra Life Request: " + json);
-                                ws.send(json);
-                            }).start();
+                            if(extraLives > 0) {
+                                new Thread(() -> {
+                                    String json = String.format("{\"type\": \"useExtraLife\", \"broadcastId\": %d, \"questionId\": %d}", currentBroadcast.broadcastId, lastQuestion.questionId);
+                                    System.out.println("Sending Extra Life Request: " + json);
+                                    ws.send(json);
+                                }).start();
+                            } else if(inTheGame){
+                                decTotalBotsInTheGame();
+                                inTheGame = false;
+                            }
                         }
 
                         if(display)
                             System.out.println("Advancing Users: " + advancing + ", Eliminated Users: " + eliminated);
+                    } else if(messageType.equals("gameSummary")){
+                        boolean youWon = jsonObject.get("youWon").getAsBoolean();
+                        if(youWon)
+                            totalWinners++;
+
+                        if(display){
+                            new Thread(() -> {
+                                try {
+                                    Thread.sleep(5000);
+                                    Main.gui.sendDialogBox("You won on " + totalWinners + " accounts.");
+                                } catch(Exception e){e.printStackTrace();}
+                            });
+                        }
                     }
                 }
 
