@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import org.omg.CORBA.Environment;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.PrintWriter;
@@ -21,13 +22,8 @@ public class Main {
             Scanner s = new Scanner(new File("tokens.txt"));
             while(s.hasNextLine() && HQAccounts.size() < accountsLimit){
                 HQAccounts.add(new HQ_API(s.nextLine()));
-                /*
-                for(Component c : gui.getComponents()){
-                    System.out.println(c.getName());
-                }
-                */
-                //MainGUI "Bots Loaded: " + HQAccounts.size();
-                //MainGUI.botsStillInLabelText = String.format("Bots Still In: %d/%d", HQ_API.totalBotsInTheGame, HQAccounts.size());
+                //gui.setTotalAccountsText(HQAccounts.size()+"");
+                //gui.setTotalConnAccounts(String.format("%d/%d", HQ_API.totalBotsInTheGame, HQAccounts.size())
             }
             HQAccounts.get(0).display = true;
         } catch(Exception e){
