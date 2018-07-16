@@ -47,7 +47,7 @@ new FormModel {
 			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
 				name: "totalaccounts"
-				"text": "{responce}"
+				"text": "{response}"
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 1 1,align center center,grow 0 0"
 			} )
@@ -76,8 +76,8 @@ new FormModel {
 				"value": "cell 0 2,align center center,grow 0 0"
 			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
-				name: "label11"
-				"text": "{responce}"
+				name: "totalConnAccounts"
+				"text": "{response}"
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 1 2,align center center,grow 0 0"
 			} )

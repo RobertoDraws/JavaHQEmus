@@ -15,10 +15,6 @@ public class MainGUI extends JPanel {
         initComponents();
     }
 
-    public void setQuestionText(String text){
-        questionresponce.setText(text);
-    }
-
     private void openGoogleSearchMouseClicked(MouseEvent e) {
         // TODO add your code here
     }
@@ -41,7 +37,7 @@ public class MainGUI extends JPanel {
         Toggle_Answer1 = new JToggleButton();
         domain = new JTextField();
         label2 = new JLabel();
-        label11 = new JLabel();
+        totalConnAccounts = new JLabel();
         AnswerResponce2 = new JLabel();
         Toggle_Answer2 = new JToggleButton();
         Cashout_Toggle = new JToggleButton();
@@ -105,7 +101,7 @@ public class MainGUI extends JPanel {
         add(label1, "cell 0 1,align center center,grow 0 0");
 
         //---- totalaccounts ----
-        totalaccounts.setText("{responce}");
+        totalaccounts.setText("{response}");
         add(totalaccounts, "cell 1 1,align center center,grow 0 0");
 
         //---- AnswerResponce1 ----
@@ -124,9 +120,9 @@ public class MainGUI extends JPanel {
         label2.setText("Total Connected Accounts:");
         add(label2, "cell 0 2,align center center,grow 0 0");
 
-        //---- label11 ----
-        label11.setText("{responce}");
-        add(label11, "cell 1 2,align center center,grow 0 0");
+        //---- totalConnAccounts ----
+        totalConnAccounts.setText("{response}");
+        add(totalConnAccounts, "cell 1 2,align center center,grow 0 0");
 
         //---- AnswerResponce2 ----
         AnswerResponce2.setText("...");
@@ -234,7 +230,7 @@ public class MainGUI extends JPanel {
     private JToggleButton Toggle_Answer1;
     private JTextField domain;
     private JLabel label2;
-    private JLabel label11;
+    private JLabel totalConnAccounts;
     private JLabel AnswerResponce2;
     private JToggleButton Toggle_Answer2;
     private JToggleButton Cashout_Toggle;
