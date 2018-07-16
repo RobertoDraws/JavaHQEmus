@@ -150,12 +150,15 @@ new FormModel {
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "Open_Google_Search"
 				"text": "Google Search"
+				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "openGoogleSearchMouseClicked", true ) )
+				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "openGoogleSearchMouseClicked", true ) )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 1 6,align center center,grow 0 0"
 			} )
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "makeitrainglitch"
 				"text": "Get Weekly Life"
+				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "weeklyLifeMouseClicked", true ) )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 2 6,align center center,grow 0 0"
 			} )

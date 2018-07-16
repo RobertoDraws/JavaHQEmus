@@ -134,7 +134,7 @@ public class HQ_API {
                             new Thread(() -> {
                                 try {
                                     Thread.sleep(5000);
-                                    Main.gui.sendDialogBox("You won on " + totalWinners + " accounts.");
+                                    //Main.gui.sendDialogBox("You won on " + totalWinners + " accounts.");
                                 } catch(Exception e){e.printStackTrace();}
                             });
                         }
@@ -160,12 +160,12 @@ public class HQ_API {
 
     private void incTotalBotsInTheGame(){
         totalBotsInTheGame++;
-        MainGUI.botsStillInLabelText = String.format("Bots Still In: %d/%d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size());
+        //MainGUI.botsStillInLabelText = String.format("Bots Still In: %d/%d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size());
     }
 
     private void decTotalBotsInTheGame(){
         totalBotsInTheGame--;
-        MainGUI.botsStillInLabelText = String.format("Bots Still In: %d/%d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size());
+        //MainGUI.botsStillInLabelText = String.format("Bots Still In: %d/%d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size());
     }
 
     private void startHeartbeat(){
@@ -188,10 +188,10 @@ public class HQ_API {
 
     public void onNextQuestion(HQQuestionData qdata){
         lastQuestion = qdata;
-        MainGUI.questionText = qdata.question;
-        MainGUI.answerBtn1Text = qdata.answers.get(0).text;
-        MainGUI.answerBtn2Text = qdata.answers.get(1).text;
-        MainGUI.answerBtn3Text = qdata.answers.get(2).text;
+        //MainGUI.questionText = qdata.question;
+        //MainGUI.answerBtn1Text = qdata.answers.get(0).text;
+        //MainGUI.answerBtn2Text = qdata.answers.get(1).text;
+        //MainGUI.answerBtn3Text = qdata.answers.get(2).text;
     }
 
     public void sendAnswer(HQAnswer answer){
