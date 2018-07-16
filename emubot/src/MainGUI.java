@@ -10,6 +10,8 @@ public class MainGUI {
     public static String botsLoadedLabelText = "Bots Loaded: 0";
     public static String botsStillInLabelText = "Bots Still In: 0/0";
 
+    private static JFrame MainFrame;
+
     private JButton answerbutton1;
     private JButton answerbutton2;
     private JButton answerbutton3;
@@ -28,7 +30,6 @@ public class MainGUI {
         answerbutton1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 for(HQ_API hqclient : Main.HQAccounts){
-                    System.out.println("Sending answer 1");
                     new Thread(() -> { hqclient.sendAnswer(HQ_API.lastQuestion.answers.get(0)); }).start();
                 }
             }
@@ -133,6 +134,10 @@ public class MainGUI {
         }).start();
     }
 
+    public void sendDialogBox(String text){
+        JOptionPane.showMessageDialog(MainFrame, text);
+    }
+
     public void setQuestion(String text){
         questionLabel.setText(text);
         questionLabel.updateUI();
@@ -144,6 +149,7 @@ public class MainGUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+        MainFrame = frame;
     }
 
     private void createUIComponents() {

@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static int accountsLimit = 2800;
+    public static int accountsLimit = 500;
     public static MainGUI gui = new MainGUI();
     public static ArrayList<HQ_API> HQAccounts = new ArrayList<>();
 
@@ -23,8 +23,6 @@ public class Main {
                 MainGUI.botsStillInLabelText = String.format("Bots Still In: %d/%d", HQ_API.totalBotsInTheGame, HQAccounts.size());
             }
             HQAccounts.get(0).display = true;
-
-            System.out.println("Finished Loading.");
         } catch(Exception e){
             e.printStackTrace();
         }
