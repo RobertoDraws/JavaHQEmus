@@ -1,0 +1,238 @@
+JFDML JFormDesigner: "6.0.3.0.150" Java: "1.8.0_152-release" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+			"$layoutConstraints": "fillx,hidemode 3"
+			"$columnConstraints": "[271,fill][171,fill][252,fill][229,fill][fill]"
+			"$rowConstraints": "[40][44][45][48][46][50][42][45]"
+		} ) {
+			name: "this"
+			"foreground": new java.awt.Color( 102, 102, 102, 255 )
+			"background": new java.awt.Color( 51, 51, 51, 255 )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label3"
+				"text": "Connection To Web Server: (Aka if Parcel server is up)"
+				"foreground": new java.awt.Color( 255, 255, 255, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 0,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "ServerStatus"
+				"text": "Online (Green) / Offline (Red)"
+				"foreground": new java.awt.Color( 255, 255, 255, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 1 0,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "questionresponce"
+				"text": "Question"
+				"foreground": sfield java.awt.Color white
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 2 0,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label5"
+				"text": "LOCKIN"
+				"foreground": sfield java.awt.Color white
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 3 0,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label15"
+				"text": "Money Management"
+				"foreground": sfield java.awt.Color white
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 4 0,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label1"
+				"text": "Total Standing Byaccounts:"
+				"foreground": new java.awt.Color( 255, 255, 255, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 1,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "totalaccounts"
+				"text": "{responce}"
+				"foreground": new java.awt.Color( 255, 255, 255, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 1 1,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "AnswerResponce1"
+				"text": "..."
+				"foreground": sfield java.awt.Color white
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 2 1,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JToggleButton" ) {
+				name: "Toggle_Answer1"
+				"text": "Answer 1"
+				"background": sfield java.awt.Color gray
+				"foreground": new java.awt.Color( 204, 204, 204, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 3 1,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "domain"
+				"text": "domain"
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 4 1,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label2"
+				"text": "Total Connected Accounts:"
+				"foreground": new java.awt.Color( 255, 255, 255, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 2,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label11"
+				"text": "{responce}"
+				"foreground": new java.awt.Color( 255, 255, 255, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 1 2,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "AnswerResponce2"
+				"text": "..."
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 65536, 0, false )
+				"foreground": sfield java.awt.Color white
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 2 2,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JToggleButton" ) {
+				name: "Toggle_Answer2"
+				"text": "Answer 2"
+				"background": sfield java.awt.Color gray
+				"foreground": new java.awt.Color( 204, 204, 204, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 3 2,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JToggleButton" ) {
+				name: "Cashout_Toggle"
+				"text": "Cashout"
+				"background": sfield java.awt.Color gray
+				"foreground": new java.awt.Color( 204, 204, 204, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 4 2,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JToggleButton" ) {
+				name: "toggleButton1"
+				"text": "Toggle Web Connection"
+				"background": sfield java.awt.Color gray
+				"foreground": new java.awt.Color( 204, 204, 204, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 3,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "AnswerResponce3"
+				"text": "..."
+				"foreground": sfield java.awt.Color white
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 2 3,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JToggleButton" ) {
+				name: "Toggle_Answer3"
+				"text": "Answer 3"
+				"background": sfield java.awt.Color gray
+				"foreground": new java.awt.Color( 204, 204, 204, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 3 3,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "textField1"
+				"text": "email"
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 4 3,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label14"
+				"text": "Balance: Balance Responce"
+				"foreground": new java.awt.Color( 255, 255, 255, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 4,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "button8"
+				"text": "Cashout"
+				"background": sfield java.awt.Color gray
+				"foreground": new java.awt.Color( 204, 204, 204, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 4 4,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "button4"
+				"text": "Update Balance"
+				"background": sfield java.awt.Color gray
+				"foreground": new java.awt.Color( 204, 204, 204, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 5,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label13"
+				"text": "Other: "
+				"foreground": new java.awt.Color( 255, 255, 255, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 6,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "Open_Google_Search"
+				"text": "Google Search"
+				"background": sfield java.awt.Color gray
+				"foreground": new java.awt.Color( 204, 204, 204, 255 )
+				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "openGoogleSearchMouseClicked", true ) )
+				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "openGoogleSearchMouseClicked", true ) )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 1 6,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "makeitrainglitch"
+				"text": "Get Weekly Life"
+				"background": sfield java.awt.Color gray
+				"foreground": new java.awt.Color( 204, 204, 204, 255 )
+				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "weeklyLifeMouseClicked", true ) )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 2 6,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "getmoreemulives"
+				"text": "Get More Emulator Lives"
+				"background": sfield java.awt.Color gray
+				"foreground": new java.awt.Color( 204, 204, 204, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 3 6,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label16"
+				"text": "Cashout Progress:"
+				"foreground": new java.awt.Color( 255, 255, 255, 255 )
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 0 7,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JProgressBar" ) {
+				name: "CashoutprogressBar"
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 1 7,aligny center,growy 0"
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label17"
+				"text": "Withdraw Pin:"
+				"foreground": sfield java.awt.Color white
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 2 7,align center center,grow 0 0"
+			} )
+			add( new FormComponent( "javax.swing.JFormattedTextField" ) {
+				name: "Withdawl_Pin"
+				"text": "####"
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 3 7,align center center,grow 0 0"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 5, 0 )
+			"size": new java.awt.Dimension( 1370, 365 )
+		} )
+	}
+}
