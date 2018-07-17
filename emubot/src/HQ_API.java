@@ -26,7 +26,7 @@ public class HQ_API {
     public boolean inTheGame = false;
 
     private String username;
-    private String bearer;
+    public String bearer;
     private String countrycode = "US";
     public static HQQuestionData lastQuestion;
     public static BroadcastData currentBroadcast;
@@ -72,8 +72,9 @@ public class HQ_API {
     }
 
     public double getBalance(){
-        JsonObject jsonObject = new JsonParser().parse(HttpGet(EndpointPayouts)).getAsJsonObject();
-        return Double.parseDouble(jsonObject.getAsJsonObject("balance").get("prizeTotal").getAsString().replaceAll("\\D+",""));
+        String payoutsget = HttpGet(EndpointMe);
+        JsonObject jsonObject = new JsonParser().parse(payoutsget).getAsJsonObject();
+        return Double.parseDouble(jsonObject.getAsJsonObject("leaderboard").get("unclaimed").getAsString().replaceAll("[^\\p{L}\\p{Nd}]+", ""));
     }
 
     public char getCountryChar(){
@@ -145,7 +146,7 @@ public class HQ_API {
                             totalWinners++;
                         totalGamesFinished++;
 
-                        System.out.println(totalGamesFinished);
+                        System.out.println("Total Games Finished: " + totalGamesFinished + ", Total Winners: " + totalWinners);
                         if(display){
                             new Thread(() -> {
                                 try {

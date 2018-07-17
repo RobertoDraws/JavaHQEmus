@@ -44,15 +44,18 @@ public class MainGUI extends JPanel {
         Toggle_Answer1.setSelected(false);
         Toggle_Answer2.setSelected(false);
         Toggle_Answer3.setSelected(false);
+        splitButton.setSelected(false);
         Toggle_Answer1.setEnabled(true);
         Toggle_Answer2.setEnabled(true);
         Toggle_Answer3.setEnabled(true);
+        splitButton.setEnabled(true);
     }
 
     private void lockIn(){
         Toggle_Answer1.setEnabled(false);
         Toggle_Answer2.setEnabled(false);
         Toggle_Answer3.setEnabled(false);
+        splitButton.setEnabled(false);
     }
 
     private void toggleConnectionClicked(MouseEvent e) {
@@ -71,13 +74,15 @@ public class MainGUI extends JPanel {
                 ((JToggleButton)e.getComponent()).setSelected(false);
             }
         } else {
+            HQ_API.totalBotsInTheGame = 0;
+            Main.gui.setTotalConnAccounts(String.format("%d / %d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size()));
             for(HQ_API client : Main.HQAccounts){
                 client.closeWebSocket();
             }
         }
     }
 
-    private double balance = 0;
+    private double bal = 0;
     private int checkedAccounts = 0;
 
     private void updateBalanceClicked(MouseEvent e) {
@@ -87,9 +92,11 @@ public class MainGUI extends JPanel {
             new Thread(() -> {
                 for (HQ_API client : Main.HQAccounts) {
                     new Thread(() -> {
-                        balance += client.getBalance();
+                        double b = client.getBalance();
+                        //System.out.println(bal + " " + client.bearer);
+
+                        balanceLabel.setText(String.format("Balance: %s%.2f [%d / %d]", countryChar, b += bal, checkedAccounts, Main.HQAccounts.size()));
                         checkedAccounts++;
-                        balanceLabel.setText(String.format("Balance: %s%.2f [%d / %d]", countryChar, balance, checkedAccounts, Main.HQAccounts.size()));
                     }).start();
                 }
             }).start();
@@ -175,6 +182,43 @@ public class MainGUI extends JPanel {
         }
     }
 
+    private void SplitButtonClicked(MouseEvent e) {
+        if(e.getComponent().isEnabled()) {
+            if (HQ_API.lastQuestion != null) {
+                lockIn();
+                int splitAmt = Main.HQAccounts.size() / 3;
+
+                for (int i = 0; i < splitAmt; i++) {
+                    HQ_API client = Main.HQAccounts.get(i);
+                    new Thread(() -> {
+                        client.sendAnswer(HQ_API.lastQuestion.answers.get(0));
+                    }).start();
+                }
+
+                for (int i = splitAmt; i < splitAmt * 2; i++) {
+                    HQ_API client = Main.HQAccounts.get(i);
+                    new Thread(() -> {
+                        client.sendAnswer(HQ_API.lastQuestion.answers.get(1));
+                    }).start();
+                }
+
+                for (int i = splitAmt * 2; i < splitAmt * 3; i++) {
+                    HQ_API client = Main.HQAccounts.get(i);
+                    new Thread(() -> {
+                        client.sendAnswer(HQ_API.lastQuestion.answers.get(2));
+                    }).start();
+                }
+            } else {
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(150);
+                        resetButtons();
+                    } catch (Exception exc) { }
+                }).start();
+            }
+        }
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner non-commercial license
@@ -198,6 +242,7 @@ public class MainGUI extends JPanel {
         Toggle_Answer3 = new JToggleButton();
         textField1 = new JTextField();
         balanceLabel = new JLabel();
+        splitButton = new JToggleButton();
         button8 = new JButton();
         button4 = new JButton();
         label13 = new JLabel();
@@ -333,6 +378,17 @@ public class MainGUI extends JPanel {
         balanceLabel.setText("Balance: {response}");
         add(balanceLabel, "cell 0 4,align center center,grow 0 0");
 
+        //---- splitButton ----
+        splitButton.setText("Split");
+        splitButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                Answer3Clicked(e);
+                SplitButtonClicked(e);
+            }
+        });
+        add(splitButton, "cell 3 4,align center center,grow 0 0");
+
         //---- button8 ----
         button8.setText("Cashout");
         add(button8, "cell 4 4,align center center,grow 0 0");
@@ -428,6 +484,7 @@ public class MainGUI extends JPanel {
     private JToggleButton Toggle_Answer3;
     private JTextField textField1;
     private JLabel balanceLabel;
+    private JToggleButton splitButton;
     private JButton button8;
     private JButton button4;
     private JLabel label13;
