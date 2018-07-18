@@ -1,3 +1,5 @@
+package emubot.src;
+
 import com.google.gson.*;
 import org.java_websocket.*;
 import org.java_websocket.client.WebSocketClient;
@@ -74,7 +76,7 @@ public class HQ_API {
     public double getBalance(){
         String payoutsget = HttpGet(EndpointMe);
         JsonObject jsonObject = new JsonParser().parse(payoutsget).getAsJsonObject();
-        return Double.parseDouble(jsonObject.getAsJsonObject("leaderboard").get("unclaimed").getAsString().replaceAll("[^\\p{L}\\p{Nd}]+", ""));
+        return Double.parseDouble(jsonObject.getAsJsonObject("leaderboard").get("unclaimed").getAsString().replaceAll("[^\\d.,]", ""));
     }
 
     public char getCountryChar(){
