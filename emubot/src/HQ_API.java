@@ -1,5 +1,3 @@
-package emubot.src;
-
 import com.google.gson.*;
 import org.java_websocket.*;
 import org.java_websocket.client.WebSocketClient;

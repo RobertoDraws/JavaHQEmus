@@ -1,9 +1,6 @@
-package emubot.src;
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import net.miginfocom.swing.*;
 /*
  * Created by JFormDesigner on Mon Jul 16 01:55:12 EDT 2018
  */

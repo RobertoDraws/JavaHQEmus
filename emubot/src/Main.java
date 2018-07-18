@@ -1,5 +1,3 @@
-package emubot.src;
-
 import com.google.gson.Gson;
 import org.omg.CORBA.Environment;
 
