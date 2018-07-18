@@ -119,6 +119,7 @@ public class HQ_API {
                         if(display)
                             onNextQuestion(qdata);
                     } else if(messageType.equals("questionSummary")){
+                        Main.gui.resetAnswersSubmitted();
                         Main.gui.resetButtons();
                         boolean correct = jsonObject.get("youGotItRight").getAsBoolean();
                         int advancing = jsonObject.get("advancingPlayersCount").getAsInt();
@@ -219,6 +220,7 @@ public class HQ_API {
             if(display)
                 System.out.println("Sending data: " + data);
             ws.send(data);
+            Main.gui.answerSubmitted();
         }
     }
 
@@ -228,7 +230,7 @@ public class HQ_API {
     }
 
     public boolean cashout(String email){
-        String json = String.format("{\"email\": \"%s\"}", email);
+        String json = String.format("{\"email\":\""+email+"\"}");
         String req = HttpPost(EndpointPayouts, json);
         System.out.println(req);
 
@@ -280,7 +282,7 @@ public class HQ_API {
             conn.setRequestMethod("POST");
             conn.setRequestProperty("User-Agent", "okhttp/3.8.0");
             conn.setRequestProperty("Authorization", "Bearer " + bearer);
-            conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("accept", "*/*");
             conn.setRequestProperty("x-hq-client", "Android/1.8.1");
             conn.setRequestProperty("x-hq-country", countrycode);
             conn.setRequestProperty("x-hq-lang", "en");

@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static int accountsLimit = 500;
+    public static int accountsLimit = 600;
     public static MainGUI gui = new MainGUI();
     public static ArrayList<HQ_API> HQAccounts = new ArrayList<>();
 

@@ -133,6 +133,12 @@ new FormModel {
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 0 4,align center center,grow 0 0"
 			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "answersSubmittedLabel"
+				"text": "Answers Submitted: 0"
+			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+				"value": "cell 2 4,align center center,grow 0 0"
+			} )
 			add( new FormComponent( "javax.swing.JToggleButton" ) {
 				name: "splitButton"
 				"text": "Split"

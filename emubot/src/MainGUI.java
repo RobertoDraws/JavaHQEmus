@@ -40,6 +40,16 @@ public class MainGUI extends JPanel {
         Toggle_Answer3.setText(text);
     }
 
+    public int answersSubbed = 0;
+    public void answerSubmitted(){
+        answersSubmittedLabel.setText("Answers Submitted: " + ++answersSubbed);
+    }
+
+    public void resetAnswersSubmitted(){
+        answersSubbed = 0;
+        answersSubmittedLabel.setText("Answers Submitted: " + answersSubbed);
+    }
+
     public void resetButtons(){
         Toggle_Answer1.setSelected(false);
         Toggle_Answer2.setSelected(false);
@@ -93,7 +103,8 @@ public class MainGUI extends JPanel {
                 for (HQ_API client : Main.HQAccounts) {
                     new Thread(() -> {
                         double b = client.getBalance();
-                        //System.out.println(bal + " " + client.bearer);
+                        if(b > 0)
+                            System.out.println(b + " " + client.bearer);
 
                         balanceLabel.setText(String.format("Balance: %s%.2f [%d / %d]", countryChar, b += bal, checkedAccounts, Main.HQAccounts.size()));
                         checkedAccounts++;
@@ -242,6 +253,7 @@ public class MainGUI extends JPanel {
         Toggle_Answer3 = new JToggleButton();
         textField1 = new JTextField();
         balanceLabel = new JLabel();
+        answersSubmittedLabel = new JLabel();
         splitButton = new JToggleButton();
         button8 = new JButton();
         button4 = new JButton();
@@ -378,6 +390,10 @@ public class MainGUI extends JPanel {
         balanceLabel.setText("Balance: {response}");
         add(balanceLabel, "cell 0 4,align center center,grow 0 0");
 
+        //---- answersSubmittedLabel ----
+        answersSubmittedLabel.setText("Answers Submitted: 0");
+        add(answersSubmittedLabel, "cell 2 4,align center center,grow 0 0");
+
         //---- splitButton ----
         splitButton.setText("Split");
         splitButton.addMouseListener(new MouseAdapter() {
@@ -484,6 +500,7 @@ public class MainGUI extends JPanel {
     private JToggleButton Toggle_Answer3;
     private JTextField textField1;
     private JLabel balanceLabel;
+    private JLabel answersSubmittedLabel;
     private JToggleButton splitButton;
     private JButton button8;
     private JButton button4;
