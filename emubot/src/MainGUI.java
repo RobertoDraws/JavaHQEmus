@@ -1,3 +1,7 @@
+package emubot.src;
+
+import net.miginfocom.swing.MigLayout;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -98,18 +102,16 @@ public class MainGUI extends JPanel {
         if(!balanceLabel.getText().equals("Balance: Updating...")) {
             char countryChar = Main.HQAccounts.get(0).getCountryChar();
             balanceLabel.setText("Balance: Updating...");
-            new Thread(() -> {
-                for (HQ_API client : Main.HQAccounts) {
-                    new Thread(() -> {
-                        double b = client.getBalance();
-                        if(b > 0)
-                            System.out.println(b + " " + client.bearer);
+            for (HQ_API client : Main.HQAccounts){
+                new Thread(() -> {
+                    double b = client.getBalance();
+                    if (b > 0)
+                        System.out.println(b + " " + client.bearer);
 
-                        balanceLabel.setText(String.format("Balance: %s%.2f [%d / %d]", countryChar, b += bal, checkedAccounts, Main.HQAccounts.size()));
-                        checkedAccounts++;
-                    }).start();
-                }
-            }).start();
+                    balanceLabel.setText(String.format("Balance: %s%.2f [%d / %d]", countryChar, bal += b, checkedAccounts, Main.HQAccounts.size()));
+                    checkedAccounts++;
+                }).start();
+            }
         }
     }
 
@@ -119,8 +121,9 @@ public class MainGUI extends JPanel {
     }
 
     private void weeklyLifeMouseClicked(MouseEvent e) {
-        //TODO implement feature
-        JOptionPane.showMessageDialog(frame, "Feature not implemented yet.");
+        for(HQ_API client : Main.HQAccounts){
+            client.extraLife();
+        }
     }
 
     private void moreEmuLivesButtonClicked(MouseEvent e) {

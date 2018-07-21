@@ -1,3 +1,5 @@
+package emubot.src;
+
 import com.google.gson.*;
 import org.java_websocket.*;
 import org.java_websocket.client.WebSocketClient;
@@ -74,7 +76,9 @@ public class HQ_API {
     public double getBalance(){
         String payoutsget = HttpGet(EndpointMe);
         JsonObject jsonObject = new JsonParser().parse(payoutsget).getAsJsonObject();
-        return Double.parseDouble(jsonObject.getAsJsonObject("leaderboard").get("unclaimed").getAsString().replaceAll("[^\\d.,]", ""));
+        if(jsonObject.get("error") == null)
+            return Double.parseDouble(jsonObject.getAsJsonObject("leaderboard").get("unclaimed").getAsString().replaceAll("[^\\d.,]", ""));
+        return 0.0;
     }
 
     public char getCountryChar(){
@@ -228,7 +232,6 @@ public class HQ_API {
         String req = HttpPost(EndpointMakeItRain, "");
         System.out.println(req);
     }
-
     public boolean cashout(String email){
         String json = String.format("{\"email\":\""+email+"\"}");
         String req = HttpPost(EndpointPayouts, json);
@@ -267,11 +270,14 @@ public class HQ_API {
             }
             in.close();
 
-            return resp.toString();
+            String respStr = resp.toString();
+            conn.disconnect();
+
+            return respStr;
         } catch(Exception e){
             System.out.println("You don fucked up: " + e.getMessage());
         }
-        return "err";
+        return "{\"error\": true}";
     }
 
     private String HttpPost(String targetUrl, String request){
@@ -326,7 +332,10 @@ public class HQ_API {
         }
     }
 
-    private String getSTK() {
+    public String getSTK() {
+        if(Main.stk != null)
+            return Main.stk;
+
         HttpURLConnection conn = null;
         try {
             URL url = new URL(EndpointMe);
@@ -349,11 +358,16 @@ public class HQ_API {
             in.close();
 
             JsonObject jsonObject = new JsonParser().parse(resp.toString()).getAsJsonObject();
-            return jsonObject.get("stk").getAsString();
+
+            System.out.println("got stk");
+            Main.stk = jsonObject.get("stk").getAsString();
+
+            conn.disconnect();
+            return Main.stk;
         } catch (Exception e) {
             System.out.println("get stk error: " + e.getMessage());
         }
-        return "err";
+        return "{\"error\": true}";
     }
 
 

@@ -1,3 +1,5 @@
+package emubot.src;
+
 import com.google.gson.Gson;
 import org.omg.CORBA.Environment;
 
@@ -11,7 +13,8 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static int accountsLimit = 500;
+    public static String stk = null;
+    public static int accountsLimit = 26903;
     public static MainGUI gui = new MainGUI();
     public static ArrayList<HQ_API> HQAccounts = new ArrayList<>();
 
@@ -26,6 +29,7 @@ public class Main {
                 gui.setTotalConnAccounts(String.format("%d / %d", HQ_API.totalBotsInTheGame, HQAccounts.size()));
             }
             HQAccounts.get(0).display = true;
+            HQAccounts.get(0).getSTK();
         } catch(Exception e){
             e.printStackTrace();
         }
