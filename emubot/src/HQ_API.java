@@ -5,6 +5,7 @@ import org.java_websocket.*;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.HttpURLConnection;
 
@@ -16,6 +17,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.Timer;
+
+import static emubot.src.Main.*;
 
 //https://gimmeproxy.com/api/getProxy?api_key=95ad3d1e-703c-4cbe-964a-4a5f81d14565&supportsHttps=true
 
@@ -35,9 +39,32 @@ public class HQ_API {
 
     private WebSocketClient ws = null;
 
-    public HQ_API(String bearer_token){
-        bearer = bearer_token;
-        System.out.println("Loaded account.");
+    public HQ_API(String username, String bearer){
+        this.bearer = bearer;
+        this.username = username;
+        log("Loaded account.");
+        botsLoaded++;
+
+        if(botsLoaded == accountsLimit || botsLoaded == accountdata.size()){
+            Main.loadingComplete();
+        }
+    }
+
+    public HQ_API(String bearer){
+        this.bearer = bearer;
+        new Thread(() -> {
+            username = getUsername();
+            Collections.replaceAll(accountdata, bearer, String.format("{\"username\": \"%s\", \"bearer\": \"%s\"}", username, bearer));
+            log("Loaded account.");
+            botsLoaded++;
+
+            if(botsLoaded == accountsLimit || botsLoaded == accountdata.size()){
+                new Thread(() -> {
+                    try{Thread.sleep(1000);}catch(Exception exce){}
+                    System.out.println("Loading complete.");
+                }).start();
+            }
+        }).start();
     }
 
     //TODO: Unfinished function to autostart the bot when the game goes live
@@ -69,7 +96,7 @@ public class HQ_API {
     }
 
     public String getUsername(){
-        JsonObject jsonObject = new JsonParser().parse(HttpGet(EndpointMe)).getAsJsonObject();
+        JsonObject jsonObject = new JsonParser().parse(GetEndpointMe()).getAsJsonObject();
         return jsonObject.get("username").getAsString();
     }
 
@@ -96,7 +123,8 @@ public class HQ_API {
             ws = new WebSocketClient(new URI(url), _headers) {
                 @Override
                 public void onOpen(ServerHandshake serverHandshake) {
-                    System.out.println("Established connection to: " + url);
+                    if(!headless)
+                        System.out.println("Established connection to: " + url);
                     incTotalBotsInTheGame();
 
                     totalGamesFinished = 0;
@@ -113,11 +141,12 @@ public class HQ_API {
                     JsonObject jsonObject = new JsonParser().parse(s).getAsJsonObject();
                     String messageType = jsonObject.get("type").getAsString();
 
-                    if(display && !messageType.equals("interaction"))
+                    if(display && !messageType.equals("interaction") && !headless)
                         System.out.println(s);
 
                     if(messageType.equals("question")){
-                        Main.gui.resetButtons();
+                        if(!headless)
+                            Main.gui.resetButtons();
                         HQQuestionData qdata = new Gson().fromJson(s, HQQuestionData.class);
 
                         if(display)
@@ -134,7 +163,7 @@ public class HQ_API {
                             if(extraLives > 0) {
                                 new Thread(() -> {
                                     String json = String.format("{\"type\": \"useExtraLife\", \"broadcastId\": %d, \"questionId\": %d}", currentBroadcast.broadcastId, lastQuestion.questionId);
-                                    System.out.println("Sending Extra Life Request: " + json);
+                                    log("Sending Extra Use Life Request");
                                     ws.send(json);
                                 }).start();
                             } else if(inTheGame){
@@ -143,22 +172,32 @@ public class HQ_API {
                             }
                         }
 
-                        if(display)
-                            System.out.println("Advancing Users: " + advancing + ", Eliminated Users: " + eliminated);
+                        if(display) {
+                            System.out.println("\nAdvancing Users: " + advancing + ", Eliminated Users: " + eliminated);
+                            new Thread(() -> {
+                                Main.sleep(1000);
+                                System.out.println("You have " + totalBotsInTheGame + " / " + botsLoaded + " bots still in the game.");
+                            }).start();
+                        }
                     } else if(messageType.equals("gameSummary")){
                         boolean youWon = jsonObject.get("youWon").getAsBoolean();
                         if(youWon)
                             totalWinners++;
                         totalGamesFinished++;
 
-                        System.out.println("Total Games Finished: " + totalGamesFinished + ", Total Winners: " + totalWinners);
+                        //System.out.println("Total Games Finished: " + totalGamesFinished + ", Total Winners: " + totalWinners);
                         if(display){
                             new Thread(() -> {
                                 try {
                                     Thread.sleep(3000);
-                                    Main.gui.sendDialogBox("You won on " + totalWinners + " accounts.");
+                                    if(headless){
+                                        System.out.println("You won on " + totalWinners + " accounts.");
+                                        finishedCmdExec = true;
+                                    } else {
+                                        Main.gui.sendDialogBox("You won on " + totalWinners + " accounts.");
+                                    }
                                 } catch(Exception e){e.printStackTrace();}
-                            });
+                            }).start();
                         }
                     }
                 }
@@ -166,7 +205,8 @@ public class HQ_API {
                 @Override
                 public void onClose(int i, String s, boolean b) {
                     inTheGame = false;
-                    System.out.println("Connection closed: " + s);
+                    if(!headless)
+                        System.out.println("Connection closed: " + s);
                 }
 
                 @Override
@@ -182,12 +222,20 @@ public class HQ_API {
 
     private void incTotalBotsInTheGame(){
         totalBotsInTheGame++;
-        Main.gui.setTotalConnAccounts(String.format("%d / %d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size()));
+        if(headless) {
+
+        } else {
+            Main.gui.setTotalConnAccounts(String.format("%d / %d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size()));
+        }
     }
 
     private void decTotalBotsInTheGame(){
         totalBotsInTheGame--;
         Main.gui.setTotalConnAccounts(String.format("%d / %d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size()));
+    }
+
+    private void log(String text){
+        System.out.println(String.format("[%s] %s", username, text));
     }
 
     private void startHeartbeat(){
@@ -210,21 +258,78 @@ public class HQ_API {
 
     public void onNextQuestion(HQQuestionData qdata){
         lastQuestion = qdata;
-        Main.gui.setQuestionText(qdata.question);
-        Main.gui.setAnswer1Text(qdata.answers.get(0).text);
-        Main.gui.setAnswer2Text(qdata.answers.get(1).text);
-        Main.gui.setAnswer3Text(qdata.answers.get(2).text);
+        if(headless){
+            Main.clearScreen();
+            System.out.println("You have " + totalBotsInTheGame + " / " + botsLoaded + " bots still in the game.");
+            System.out.println(qdata.question+"\n");
+            System.out.println("[1] " + qdata.answers.get(0).text);
+            System.out.println("[2] " + qdata.answers.get(0).text);
+            System.out.println("[3] " + qdata.answers.get(0).text);
+
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("[1, 2, 3, s]: ");
+            String command = scanner.nextLine();
+
+            if(command.startsWith("1")) {
+                for (HQ_API hqclient : Main.HQAccounts) {
+                    new Thread(() -> {
+                        hqclient.sendAnswer(HQ_API.lastQuestion.answers.get(0));
+                    }).start();
+                }
+            } else if(command.startsWith("2")){
+                for (HQ_API hqclient : Main.HQAccounts) {
+                    new Thread(() -> {
+                        hqclient.sendAnswer(HQ_API.lastQuestion.answers.get(1));
+                    }).start();
+                }
+            } else if(command.startsWith("3")){
+                for (HQ_API hqclient : Main.HQAccounts) {
+                    new Thread(() -> {
+                        hqclient.sendAnswer(HQ_API.lastQuestion.answers.get(2));
+                    }).start();
+                }
+            } else if(command.startsWith("s")){
+                int splitAmt = Main.HQAccounts.size() / 3;
+
+                for (int i = 0; i < splitAmt; i++) {
+                    HQ_API client = Main.HQAccounts.get(i);
+                    new Thread(() -> {
+                        client.sendAnswer(HQ_API.lastQuestion.answers.get(0));
+                    }).start();
+                }
+
+                for (int i = splitAmt; i < splitAmt * 2; i++) {
+                    HQ_API client = Main.HQAccounts.get(i);
+                    new Thread(() -> {
+                        client.sendAnswer(HQ_API.lastQuestion.answers.get(1));
+                    }).start();
+                }
+
+                for (int i = splitAmt * 2; i < splitAmt * 3; i++) {
+                    HQ_API client = Main.HQAccounts.get(i);
+                    new Thread(() -> {
+                        client.sendAnswer(HQ_API.lastQuestion.answers.get(2));
+                    }).start();
+                }
+            }
+        } else {
+            Main.gui.setQuestionText(qdata.question);
+            Main.gui.setAnswer1Text(qdata.answers.get(0).text);
+            Main.gui.setAnswer2Text(qdata.answers.get(1).text);
+            Main.gui.setAnswer3Text(qdata.answers.get(2).text);
+        }
     }
 
     public void sendAnswer(HQAnswer answer){
         if(ws != null && ws.isOpen() && inTheGame) {
             String data = String.format("{\"type\": \"answer\", \"broadcastId\": %d, \"answerId\": %d, \"questionId\": %d}",
-                currentBroadcast.broadcastId, answer.answerId, lastQuestion.questionId);
+                /*currentBroadcast.broadcastId*/0, answer.answerId, lastQuestion.questionId);
 
-            if(display)
-                System.out.println("Sending data: " + data);
+                log("Answer submitted: " + answer.text);
             ws.send(data);
-            Main.gui.answerSubmitted();
+
+            if(!headless)
+                Main.gui.answerSubmitted();
         }
     }
 
@@ -244,6 +349,55 @@ public class HQ_API {
         String apiResp = HttpGet(EndpointSchedule);
         HQAPIData data = new Gson().fromJson(apiResp, HQAPIData.class);
         return data;
+    }
+
+    public static void joinGameHeadless(){
+        //HQAPIData apiData = Main.HQAccounts.get(0).getAPIData();
+        //if(apiData.active) {
+            String wsurl = "ws://69.143.151.72:80";//Main.HQAccounts.get(0).getAPIData().broadcast.socketUrl.replace("https", "wss");
+            for (HQ_API client : Main.HQAccounts) {
+                new Thread(() -> {
+                    client.openWebSocket(wsurl);
+                }).start();
+            }
+            Main.HQAccounts.get(0).display = true;
+        //} else {
+        //    System.out.println("HQ WebSocket is not live!");
+        //    Main.finishedCmdExec = true;
+        //}
+    }
+
+    private String GetEndpointMe() {
+        HttpURLConnection conn = null;
+
+        try{
+            URL url = new URL(EndpointMe);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            conn.setRequestProperty("User-Agent", "okhttp/3.8.0");
+            conn.setRequestProperty("Authorization", "Bearer " + bearer);
+            conn.setRequestProperty("x-hq-client", "Android/1.8.1");
+            conn.setRequestProperty("x-hq-country", countrycode);
+            conn.setRequestProperty("x-hq-lang", "en");
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuffer resp = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                resp.append(inputLine);
+            }
+            in.close();
+
+            String respStr = resp.toString();
+            conn.disconnect();
+
+            return respStr;
+        } catch(Exception e){
+            System.out.println("You don fucked up: " + e.getMessage());
+        }
+        return "{\"error\": true}";
     }
 
     private String HttpGet(String targetUrl) {
@@ -359,7 +513,6 @@ public class HQ_API {
 
             JsonObject jsonObject = new JsonParser().parse(resp.toString()).getAsJsonObject();
 
-            System.out.println("got stk");
             Main.stk = jsonObject.get("stk").getAsString();
 
             conn.disconnect();
