@@ -76,13 +76,7 @@ public class MainGUI extends JPanel {
         if(((JToggleButton)e.getComponent()).isSelected()){
             HQAPIData apiData = Main.HQAccounts.get(0).getAPIData();
             if(apiData.active) {
-                String wsurl = Main.HQAccounts.get(0).getAPIData().broadcast.socketUrl.replace("https", "wss");
-                for (HQ_API client : Main.HQAccounts) {
-                    new Thread(() -> {
-                        client.openWebSocket(wsurl);
-                    }).start();
-                }
-                Main.HQAccounts.get(0).display = true;
+                HQ_API.joinGame();
             } else {
                 JOptionPane.showMessageDialog(frame, "HQ WebSocket is not live!");
                 ((JToggleButton)e.getComponent()).setSelected(false);

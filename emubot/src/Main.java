@@ -86,7 +86,7 @@ public class Main {
                 } else if(command.equals("test")){
                     System.out.println("testing");
                 } else if(command.equals("join")){
-                    HQ_API.joinGameHeadless();
+                    HQ_API.joinGame();
                     while(!finishedCmdExec){Thread.sleep(10);}
                 }
             }

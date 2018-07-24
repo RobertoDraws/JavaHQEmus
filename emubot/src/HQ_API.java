@@ -62,7 +62,8 @@ public class HQ_API {
         log("Loaded account.");
         botsLoaded++;
 
-        if(headless && botsLoaded == accountsLimit || botsLoaded == accountdata.size()){
+        if(Main.headless && (botsLoaded == accountsLimit) || (botsLoaded == accountdata.size())){
+            try{Thread.sleep(1000);}catch(Exception exce){}
             Main.loadingComplete();
         }
     }
@@ -78,7 +79,8 @@ public class HQ_API {
             if(botsLoaded == accountsLimit || botsLoaded == accountdata.size()){
                 new Thread(() -> {
                     try{Thread.sleep(1000);}catch(Exception exce){}
-                    System.out.println("Loading complete.");
+                    if(headless)
+                        Main.loadingComplete();
                 }).start();
             }
         }).start();
@@ -362,28 +364,38 @@ public class HQ_API {
         return data;
     }
 
-    public static void joinGameHeadless() {
+    public static void joinGame() {
         if (debug) {
-            String wsurl = "ws://69.143.151.72:80";
-            for (HQ_API client : Main.HQAccounts) {
-                new Thread(() -> {
-                    client.openWebSocket(wsurl);
-                }).start();
-            }
-        } else {
-            HQAPIData apiData = Main.HQAccounts.get(0).getAPIData();
-            if (apiData.active) {
-                String wsurl = Main.HQAccounts.get(0).getAPIData().broadcast.socketUrl.replace("https", "wss");
-                for (HQ_API client : Main.HQAccounts) {
+            new Thread(() -> {
+                String wsurl = "ws://69.143.151.72:80";
+                for (int i = 0; i < Main.HQAccounts.size() - 1; i += 2) {
+                    HQ_API client1 = Main.HQAccounts.get(i);
+                    HQ_API client2 = Main.HQAccounts.get(i + 1);
                     new Thread(() -> {
-                        client.openWebSocket(wsurl);
+                        client1.openWebSocket(wsurl);
+                        client2.openWebSocket(wsurl);
                     }).start();
                 }
-                Main.HQAccounts.get(0).display = true;
-            } else {
-                System.out.println("HQ WebSocket is not live!");
-                Main.finishedCmdExec = true;
-            }
+            }).start();
+        } else {
+            new Thread(() -> {
+                HQAPIData apiData = Main.HQAccounts.get(0).getAPIData();
+                if (apiData.active) {
+                    String wsurl = Main.HQAccounts.get(0).getAPIData().broadcast.socketUrl.replace("https", "wss");
+                    for (int i = 0; i < Main.HQAccounts.size() - 1; i += 2) {
+                        HQ_API client1 = Main.HQAccounts.get(i);
+                        HQ_API client2 = Main.HQAccounts.get(i + 1);
+                        new Thread(() -> {
+                            client1.openWebSocket(wsurl);
+                            client2.openWebSocket(wsurl);
+                        }).start();
+                    }
+                    Main.HQAccounts.get(0).display = true;
+                } else {
+                    System.out.println("HQ WebSocket is not live!");
+                    Main.finishedCmdExec = true;
+                }
+            }).start();
         }
     }
 
