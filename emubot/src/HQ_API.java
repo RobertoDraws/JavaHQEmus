@@ -1,23 +1,23 @@
 package emubot.src;
 
-import com.google.gson.*;
-import org.java_websocket.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
-import javax.swing.*;
 import java.io.*;
 import java.net.HttpURLConnection;
-
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.Timer;
 
 import static emubot.src.Main.*;
 
@@ -337,7 +337,8 @@ public class HQ_API {
         System.out.println(req);
     }
     public boolean cashout(String email){
-        String json = String.format("{\"email\":\""+email+"\"}");
+        String json = "{\"email\":\""+email+"\", \"country\": \"US\"}";
+        //String json = "{\"user\": \"5365037\",\"country\": \"US\"}";
         String req = HttpPost(EndpointPayouts, json);
         System.out.println(req);
 
@@ -443,54 +444,43 @@ public class HQ_API {
     }
 
     private String HttpPost(String targetUrl, String request){
-        HttpURLConnection conn = null;
         try {
-            URL url = new URL(targetUrl);
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("User-Agent", "okhttp/3.8.0");
-            conn.setRequestProperty("Authorization", "Bearer " + bearer);
-            conn.setRequestProperty("accept", "*/*");
-            conn.setRequestProperty("x-hq-client", "Android/1.8.1");
-            conn.setRequestProperty("x-hq-country", countrycode);
-            conn.setRequestProperty("x-hq-lang", "en");
-            conn.setRequestProperty("x-hq-stk", getSTK());
 
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
+            HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead
 
-            OutputStream os = conn.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(os, "UTF-8"));
-            writer.write(request);
-            writer.flush();
-            writer.close();
-            os.close();
+            HttpPost postRequest = new HttpPost(
+                    targetUrl);
 
-            conn.connect();
+            StringEntity input = new StringEntity(request);
+            input.setContentType("application/json");
+            postRequest.setHeader("User-Agent", "okhttp/3.8.0");
+            postRequest.setHeader("Authorization", "Bearer " + bearer);
+            postRequest.setHeader("accept", "*/*");
+            postRequest.setHeader("x-hq-client", "Android/1.8.1");
+            postRequest.setHeader("x-hq-country", countrycode);
+            postRequest.setHeader("x-hq-lang", "en");
+            postRequest.setHeader("x-hq-stk", getSTK());
+            postRequest.setEntity(input);
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuffer resp = new StringBuffer();
+            HttpResponse response = httpClient.execute(postRequest);
 
-            while ((inputLine = in.readLine()) != null) {
-                resp.append(inputLine);
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader((response.getEntity().getContent())));
+
+            String output = "";
+            String line;
+            while ((line = br.readLine()) != null) {
+                output += line;
             }
-            in.close();
+            httpClient.getConnectionManager().shutdown();
+            return output;
 
-            return resp.toString();
-        } catch(Exception e){
-            try {
-                StringBuffer resp = new StringBuffer();
-                BufferedReader error = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-                String errorLine;
-                while ((errorLine = error.readLine()) != null) {
-                    resp.append(errorLine);
-                }
-                return resp.toString();
-            } catch(Exception ex){
-                return "oof";
-            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return "{\"error\": true}";
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "{\"error\": true}";
         }
     }
 

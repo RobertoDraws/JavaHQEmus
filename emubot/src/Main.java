@@ -25,7 +25,7 @@ public class Main {
     public static boolean finishedCmdExec = false;
 
     public static String stk = null;
-    public static int accountsLimit = 5;
+    public static int accountsLimit = 5000;
     public static MainGUI gui = new MainGUI();
     public static ArrayList<HQ_API> HQAccounts = new ArrayList<>();
 

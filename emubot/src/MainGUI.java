@@ -233,9 +233,11 @@ public class MainGUI extends JPanel {
 
     private void cashoutBtnMouseClicked(MouseEvent e) {
         for(HQ_API client : Main.HQAccounts){
-            String randomEmail = randomString(8) + "@" + domainTextbox.getText();
-            client.log("Cashing out to " + randomEmail);
-            client.cashout(randomEmail);
+            if(client.getBalance() > 0) {
+                String randomEmail = randomString(8) + "@" + domainTextbox.getText();
+                client.log("Cashing out to " + randomEmail + "\n" + client.bearer);
+                client.cashout(randomEmail);
+            }
         }
     }
 
