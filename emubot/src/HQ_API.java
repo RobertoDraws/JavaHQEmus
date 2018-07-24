@@ -26,7 +26,15 @@ import static emubot.src.Main.*;
 public class HQ_API {
     public static int totalGamesFinished = 0;
     public static int totalWinners = 0;
-    public static int totalBotsInTheGame = 0;
+
+    public static int totalBotsInTheGame(){
+        int accountsIn = 0;
+        for(HQ_API client : Main.HQAccounts){
+            if(client.inTheGame)
+                accountsIn++;
+        }
+        return accountsIn;
+    }
 
     public boolean display = false;
     public boolean inTheGame = false;
@@ -45,7 +53,7 @@ public class HQ_API {
         log("Loaded account.");
         botsLoaded++;
 
-        if(botsLoaded == accountsLimit || botsLoaded == accountdata.size()){
+        if(headless && botsLoaded == accountsLimit || botsLoaded == accountdata.size()){
             Main.loadingComplete();
         }
     }
@@ -115,7 +123,6 @@ public class HQ_API {
 
     public void openWebSocket(String url){
         totalWinners = 0;
-        totalBotsInTheGame = 0;
         try {
             Map<String, String> _headers = new HashMap<>();
             _headers.put("Authorization","Bearer " + bearer);
@@ -125,7 +132,6 @@ public class HQ_API {
                 public void onOpen(ServerHandshake serverHandshake) {
                     if(!headless)
                         System.out.println("Established connection to: " + url);
-                    incTotalBotsInTheGame();
 
                     totalGamesFinished = 0;
                     inTheGame = true;
@@ -151,6 +157,9 @@ public class HQ_API {
 
                         if(display)
                             onNextQuestion(qdata);
+
+                        if(display && lastQuestion == null)
+                            refreshMainScreen();
                     } else if(messageType.equals("questionSummary")){
                         Main.gui.resetAnswersSubmitted();
                         Main.gui.resetButtons();
@@ -167,7 +176,6 @@ public class HQ_API {
                                     ws.send(json);
                                 }).start();
                             } else if(inTheGame){
-                                decTotalBotsInTheGame();
                                 inTheGame = false;
                             }
                         }
@@ -176,7 +184,7 @@ public class HQ_API {
                             System.out.println("\nAdvancing Users: " + advancing + ", Eliminated Users: " + eliminated);
                             new Thread(() -> {
                                 Main.sleep(1000);
-                                System.out.println("You have " + totalBotsInTheGame + " / " + botsLoaded + " bots still in the game.");
+                                System.out.println("You have " + totalBotsInTheGame() + " / " + botsLoaded + " bots still in the game.");
                             }).start();
                         }
                     } else if(messageType.equals("gameSummary")){
@@ -220,21 +228,12 @@ public class HQ_API {
         }
     }
 
-    private void incTotalBotsInTheGame(){
-        totalBotsInTheGame++;
-        if(headless) {
-
-        } else {
-            Main.gui.setTotalConnAccounts(String.format("%d / %d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size()));
-        }
+    private void refreshMainScreen(){
+        clearScreen();
+        System.out.println("Connected To Game!\nWaiting for game to start.\n");
     }
 
-    private void decTotalBotsInTheGame(){
-        totalBotsInTheGame--;
-        Main.gui.setTotalConnAccounts(String.format("%d / %d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size()));
-    }
-
-    private void log(String text){
+    public void log(String text){
         System.out.println(String.format("[%s] %s", username, text));
     }
 
@@ -260,11 +259,11 @@ public class HQ_API {
         lastQuestion = qdata;
         if(headless){
             Main.clearScreen();
-            System.out.println("You have " + totalBotsInTheGame + " / " + botsLoaded + " bots still in the game.");
+            System.out.println("You have " + totalBotsInTheGame() + " / " + botsLoaded + " bots still in the game.");
             System.out.println(qdata.question+"\n");
             System.out.println("[1] " + qdata.answers.get(0).text);
-            System.out.println("[2] " + qdata.answers.get(0).text);
-            System.out.println("[3] " + qdata.answers.get(0).text);
+            System.out.println("[2] " + qdata.answers.get(1).text);
+            System.out.println("[3] " + qdata.answers.get(2).text);
 
             Scanner scanner = new Scanner(System.in);
             System.out.print("[1, 2, 3, s]: ");
@@ -351,20 +350,29 @@ public class HQ_API {
         return data;
     }
 
-    public static void joinGameHeadless(){
-        //HQAPIData apiData = Main.HQAccounts.get(0).getAPIData();
-        //if(apiData.active) {
-            String wsurl = "ws://69.143.151.72:80";//Main.HQAccounts.get(0).getAPIData().broadcast.socketUrl.replace("https", "wss");
+    public static void joinGameHeadless() {
+        if (debug) {
+            String wsurl = "ws://69.143.151.72:80";
             for (HQ_API client : Main.HQAccounts) {
                 new Thread(() -> {
                     client.openWebSocket(wsurl);
                 }).start();
             }
-            Main.HQAccounts.get(0).display = true;
-        //} else {
-        //    System.out.println("HQ WebSocket is not live!");
-        //    Main.finishedCmdExec = true;
-        //}
+        } else {
+            HQAPIData apiData = Main.HQAccounts.get(0).getAPIData();
+            if (apiData.active) {
+                String wsurl = Main.HQAccounts.get(0).getAPIData().broadcast.socketUrl.replace("https", "wss");
+                for (HQ_API client : Main.HQAccounts) {
+                    new Thread(() -> {
+                        client.openWebSocket(wsurl);
+                    }).start();
+                }
+                Main.HQAccounts.get(0).display = true;
+            } else {
+                System.out.println("HQ WebSocket is not live!");
+                Main.finishedCmdExec = true;
+            }
+        }
     }
 
     private String GetEndpointMe() {

@@ -65,10 +65,10 @@ new FormModel {
 				"value": "cell 3 1,align center center,grow 0 0"
 			} )
 			add( new FormComponent( "javax.swing.JTextField" ) {
-				name: "domain"
+				name: "domainTextbox"
 				"text": "domain"
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 4 1,align center center,grow 0 0"
+				"value": "cell 4 1,aligny center,grow 100 0"
 			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
 				name: "label2"
@@ -95,9 +95,10 @@ new FormModel {
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 3 2,align center center,grow 0 0"
 			} )
-			add( new FormComponent( "javax.swing.JToggleButton" ) {
-				name: "Cashout_Toggle"
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "cashoutBtn"
 				"text": "Cashout"
+				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "cashoutBtnMouseClicked", true ) )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 4 2,align center center,grow 0 0"
 			} )
@@ -121,12 +122,6 @@ new FormModel {
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 3 3,align center center,grow 0 0"
 			} )
-			add( new FormComponent( "javax.swing.JTextField" ) {
-				name: "textField1"
-				"text": "email"
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 4 3,align center center,grow 0 0"
-			} )
 			add( new FormComponent( "javax.swing.JLabel" ) {
 				name: "balanceLabel"
 				"text": "Balance: {response}"
@@ -146,12 +141,6 @@ new FormModel {
 				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "SplitButtonClicked", true ) )
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 3 4,align center center,grow 0 0"
-			} )
-			add( new FormComponent( "javax.swing.JButton" ) {
-				name: "button8"
-				"text": "Cashout"
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 4 4,align center center,grow 0 0"
 			} )
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "button4"

@@ -87,8 +87,7 @@ public class MainGUI extends JPanel {
                 ((JToggleButton)e.getComponent()).setSelected(false);
             }
         } else {
-            HQ_API.totalBotsInTheGame = 0;
-            Main.gui.setTotalConnAccounts(String.format("%d / %d", HQ_API.totalBotsInTheGame, Main.HQAccounts.size()));
+            Main.gui.setTotalConnAccounts(String.format("%d / %d", HQ_API.totalBotsInTheGame(), Main.HQAccounts.size()));
             for(HQ_API client : Main.HQAccounts){
                 client.closeWebSocket();
             }
@@ -232,6 +231,14 @@ public class MainGUI extends JPanel {
         }
     }
 
+    private void cashoutBtnMouseClicked(MouseEvent e) {
+        for(HQ_API client : Main.HQAccounts){
+            String randomEmail = randomString(8) + "@" + domainTextbox.getText();
+            client.log("Cashing out to " + randomEmail);
+            client.cashout(randomEmail);
+        }
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner non-commercial license
@@ -244,20 +251,18 @@ public class MainGUI extends JPanel {
         totalaccounts = new JLabel();
         AnswerResponce1 = new JLabel();
         Toggle_Answer1 = new JToggleButton();
-        domain = new JTextField();
+        domainTextbox = new JTextField();
         label2 = new JLabel();
         totalConnAccounts = new JLabel();
         AnswerResponce2 = new JLabel();
         Toggle_Answer2 = new JToggleButton();
-        Cashout_Toggle = new JToggleButton();
+        cashoutBtn = new JButton();
         toggleButton1 = new JToggleButton();
         AnswerResponce3 = new JLabel();
         Toggle_Answer3 = new JToggleButton();
-        textField1 = new JTextField();
         balanceLabel = new JLabel();
         answersSubmittedLabel = new JLabel();
         splitButton = new JToggleButton();
-        button8 = new JButton();
         button4 = new JButton();
         label13 = new JLabel();
         Open_Google_Search = new JButton();
@@ -330,9 +335,9 @@ public class MainGUI extends JPanel {
         });
         add(Toggle_Answer1, "cell 3 1,align center center,grow 0 0");
 
-        //---- domain ----
-        domain.setText("domain");
-        add(domain, "cell 4 1,align center center,grow 0 0");
+        //---- domainTextbox ----
+        domainTextbox.setText("domain");
+        add(domainTextbox, "cell 4 1,aligny center,grow 100 0");
 
         //---- label2 ----
         label2.setText("Total Connected Accounts:");
@@ -356,9 +361,15 @@ public class MainGUI extends JPanel {
         });
         add(Toggle_Answer2, "cell 3 2,align center center,grow 0 0");
 
-        //---- Cashout_Toggle ----
-        Cashout_Toggle.setText("Cashout");
-        add(Cashout_Toggle, "cell 4 2,align center center,grow 0 0");
+        //---- cashoutBtn ----
+        cashoutBtn.setText("Cashout");
+        cashoutBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cashoutBtnMouseClicked(e);
+            }
+        });
+        add(cashoutBtn, "cell 4 2,align center center,grow 0 0");
 
         //---- toggleButton1 ----
         toggleButton1.setText("Toggle Web Connection");
@@ -384,10 +395,6 @@ public class MainGUI extends JPanel {
         });
         add(Toggle_Answer3, "cell 3 3,align center center,grow 0 0");
 
-        //---- textField1 ----
-        textField1.setText("email");
-        add(textField1, "cell 4 3,align center center,grow 0 0");
-
         //---- balanceLabel ----
         balanceLabel.setText("Balance: {response}");
         add(balanceLabel, "cell 0 4,align center center,grow 0 0");
@@ -406,10 +413,6 @@ public class MainGUI extends JPanel {
             }
         });
         add(splitButton, "cell 3 4,align center center,grow 0 0");
-
-        //---- button8 ----
-        button8.setText("Cashout");
-        add(button8, "cell 4 4,align center center,grow 0 0");
 
         //---- button4 ----
         button4.setText("Update Balance");
@@ -479,6 +482,16 @@ public class MainGUI extends JPanel {
         this.frame = frame;
     }
 
+    public String randomString(int length){
+        String chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz123456789";
+
+        String output = "";
+        for(int i = 0; i < length; i++){
+            output += chars.charAt((int)(Math.random() * chars.length()));
+        }
+        return output;
+    }
+
     public JFrame frame;
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
     // Generated using JFormDesigner non-commercial license
@@ -491,20 +504,18 @@ public class MainGUI extends JPanel {
     private JLabel totalaccounts;
     private JLabel AnswerResponce1;
     private JToggleButton Toggle_Answer1;
-    private JTextField domain;
+    private JTextField domainTextbox;
     private JLabel label2;
     private JLabel totalConnAccounts;
     private JLabel AnswerResponce2;
     private JToggleButton Toggle_Answer2;
-    private JToggleButton Cashout_Toggle;
+    private JButton cashoutBtn;
     private JToggleButton toggleButton1;
     private JLabel AnswerResponce3;
     private JToggleButton Toggle_Answer3;
-    private JTextField textField1;
     private JLabel balanceLabel;
     private JLabel answersSubmittedLabel;
     private JToggleButton splitButton;
-    private JButton button8;
     private JButton button4;
     private JLabel label13;
     private JButton Open_Google_Search;

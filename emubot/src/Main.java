@@ -24,11 +24,13 @@ public class Main {
 
     public static boolean finishedCmdExec = false;
 
-    public static Boolean headless = false;
     public static String stk = null;
-    public static int accountsLimit = 50;
+    public static int accountsLimit = 5;
     public static MainGUI gui = new MainGUI();
     public static ArrayList<HQ_API> HQAccounts = new ArrayList<>();
+
+    public static boolean headless = false;
+    public static boolean debug = false;
 
     public static void main(String[] args){
         try{
@@ -36,10 +38,17 @@ public class Main {
                 List<String> argslist = Arrays.asList(args);
                 if(argslist.contains("headless")){
                     headless = true;
+                }
+
+                if(argslist.contains("debug")){
+                    debug = true;
                 } else {
-                    gui.OpenGUI();
+                    debug = false;
                 }
             }
+
+            if(!headless)
+                gui.OpenGUI();
 
             new Thread(() -> {
                 try {
@@ -48,7 +57,7 @@ public class Main {
 
                     for (int i = 0; i < accountdata.size(); i++) {
                         String data = accountdata.get(i);
-                        if (i <= accountsLimit) {
+                        if (i < accountsLimit) {
                             if (data.charAt(0) == '{') {
                                 JsonObject jsonObject = new JsonParser().parse(data).getAsJsonObject();
                                 HQAccounts.add(new HQ_API(jsonObject.get("username").getAsString(), jsonObject.get("bearer").getAsString()));
@@ -58,7 +67,7 @@ public class Main {
 
                             if (!headless) {
                                 gui.setTotalAccountsText(HQAccounts.size() + "");
-                                gui.setTotalConnAccounts(String.format("%d / %d", HQ_API.totalBotsInTheGame, HQAccounts.size()));
+                                gui.setTotalConnAccounts(String.format("%d / %d", HQ_API.totalBotsInTheGame(), HQAccounts.size()));
                             }
                         }
                     }
@@ -67,7 +76,7 @@ public class Main {
                 }catch(Exception e){e.printStackTrace();}
             }).start();
 
-            while(true) {
+            while(headless) {
                 Scanner scanner = new Scanner(System.in);
                 System.out.print("# ");
                 String command = scanner.nextLine();
