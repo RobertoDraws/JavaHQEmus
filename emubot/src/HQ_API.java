@@ -36,6 +36,15 @@ public class HQ_API {
         return accountsIn;
     }
 
+    public static ArrayList<HQ_API> getAllBotsInTheGame(){
+        ArrayList<HQ_API> botsIn = new ArrayList<>();
+        for(HQ_API client : Main.HQAccounts){
+            if(client.inTheGame)
+                botsIn.add(client);
+        }
+        return botsIn;
+    }
+
     public boolean display = false;
     public boolean inTheGame = false;
 

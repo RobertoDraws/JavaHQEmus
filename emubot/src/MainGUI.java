@@ -4,6 +4,7 @@ import net.miginfocom.swing.MigLayout;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import javax.swing.*;
 /*
  * Created by JFormDesigner on Mon Jul 16 01:55:12 EDT 2018
@@ -198,24 +199,25 @@ public class MainGUI extends JPanel {
         if(e.getComponent().isEnabled()) {
             if (HQ_API.lastQuestion != null) {
                 lockIn();
-                int splitAmt = Main.HQAccounts.size() / 3;
+                int splitAmt = HQ_API.totalBotsInTheGame() / 3;
+                ArrayList<HQ_API> botsIn = HQ_API.getAllBotsInTheGame();
 
                 for (int i = 0; i < splitAmt; i++) {
-                    HQ_API client = Main.HQAccounts.get(i);
+                    HQ_API client = botsIn.get(i);
                     new Thread(() -> {
                         client.sendAnswer(HQ_API.lastQuestion.answers.get(0));
                     }).start();
                 }
 
                 for (int i = splitAmt; i < splitAmt * 2; i++) {
-                    HQ_API client = Main.HQAccounts.get(i);
+                    HQ_API client = botsIn.get(i);
                     new Thread(() -> {
                         client.sendAnswer(HQ_API.lastQuestion.answers.get(1));
                     }).start();
                 }
 
                 for (int i = splitAmt * 2; i < splitAmt * 3; i++) {
-                    HQ_API client = Main.HQAccounts.get(i);
+                    HQ_API client = botsIn.get(i);
                     new Thread(() -> {
                         client.sendAnswer(HQ_API.lastQuestion.answers.get(2));
                     }).start();
@@ -233,10 +235,12 @@ public class MainGUI extends JPanel {
 
     private void cashoutBtnMouseClicked(MouseEvent e) {
         for(HQ_API client : Main.HQAccounts){
-            if(client.getBalance() > 0) {
+            if (client.getBalance() > 0) {
                 String randomEmail = client.getUsername() + "@" + domainTextbox.getText();
                 client.log("Cashing out to " + randomEmail + "\n" + client.bearer);
                 client.cashout(randomEmail);
+            } else {
+                client.log("No balance. Not cashing out.");
             }
         }
     }
