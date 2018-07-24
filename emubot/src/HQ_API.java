@@ -104,6 +104,8 @@ public class HQ_API {
     }
 
     public String getUsername(){
+        if(username != null)
+            return username;
         JsonObject jsonObject = new JsonParser().parse(GetEndpointMe()).getAsJsonObject();
         return jsonObject.get("username").getAsString();
     }
