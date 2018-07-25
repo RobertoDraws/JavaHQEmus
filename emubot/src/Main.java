@@ -25,7 +25,7 @@ public class Main {
     public static boolean finishedCmdExec = false;
 
     public static String stk = null;
-    public static int accountsLimit = 5000;
+    public static int accountsLimit = 2000;
     public static MainGUI gui = new MainGUI();
     public static ArrayList<HQ_API> HQAccounts = new ArrayList<>();
 
@@ -108,7 +108,6 @@ public class Main {
                                 "|  _  | |_| |       | |___| |  | | |_| |___) | \n" +
                                 "|_| |_|\\__\\_\\       |_____|_|  |_|\\___/|____/  \n" +
                                 "                                               \n");
-            System.out.println("Written by RobertoDraws and jakecrowley");
 
             System.out.println("You currently have " + botsLoaded + " loaded bots.\n");
             System.out.println("Available commands are: join, checkbal");

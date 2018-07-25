@@ -24,6 +24,8 @@ import static emubot.src.Main.*;
 //https://gimmeproxy.com/api/getProxy?api_key=95ad3d1e-703c-4cbe-964a-4a5f81d14565&supportsHttps=true
 
 public class HQ_API {
+    public static boolean errored = false;
+
     public static int totalGamesFinished = 0;
     public static int totalWinners = 0;
 
@@ -145,13 +147,15 @@ public class HQ_API {
                 public void onOpen(ServerHandshake serverHandshake) {
                     if(!headless)
                         System.out.println("Established connection to: " + url);
+                    else
+                        log("Account connected!");
 
                     totalGamesFinished = 0;
                     inTheGame = true;
 
-                    if(display){
+                    if(currentBroadcast == null)
                         currentBroadcast = getAPIData().broadcast;
-                    }
+
                     startHeartbeat();
                 }
 
@@ -168,11 +172,12 @@ public class HQ_API {
                             Main.gui.resetButtons();
                         HQQuestionData qdata = new Gson().fromJson(s, HQQuestionData.class);
 
-                        if(display)
+                        if(display || (lastQuestion != null && !lastQuestion.question.equals(qdata.question)))
                             onNextQuestion(qdata);
 
                         if(display && lastQuestion == null)
                             refreshMainScreen();
+
                     } else if(messageType.equals("questionSummary")){
                         Main.gui.resetAnswersSubmitted();
                         Main.gui.resetButtons();
@@ -232,7 +237,8 @@ public class HQ_API {
 
                 @Override
                 public void onError(Exception e) {
-                    e.printStackTrace();
+                    errored = true;
+                    System.out.println("Connection error.");
                 }
             };
             ws.connect();
@@ -368,7 +374,7 @@ public class HQ_API {
         if (debug) {
             new Thread(() -> {
                 String wsurl = "ws://69.143.151.72:80";
-                for (int i = 0; i < Main.HQAccounts.size() - 1; i += 2) {
+                for (int i = 0; i < Main.HQAccounts.size(); i += 2) {
                     HQ_API client1 = Main.HQAccounts.get(i);
                     HQ_API client2 = Main.HQAccounts.get(i + 1);
                     new Thread(() -> {
@@ -382,7 +388,7 @@ public class HQ_API {
                 HQAPIData apiData = Main.HQAccounts.get(0).getAPIData();
                 if (apiData.active) {
                     String wsurl = Main.HQAccounts.get(0).getAPIData().broadcast.socketUrl.replace("https", "wss");
-                    for (int i = 0; i < Main.HQAccounts.size() - 1; i += 2) {
+                    for (int i = 0; i < Main.HQAccounts.size() - 1 && !errored; i += 2) {
                         HQ_API client1 = Main.HQAccounts.get(i);
                         HQ_API client2 = Main.HQAccounts.get(i + 1);
                         new Thread(() -> {
@@ -390,7 +396,6 @@ public class HQ_API {
                             client2.openWebSocket(wsurl);
                         }).start();
                     }
-                    Main.HQAccounts.get(0).display = true;
                 } else {
                     System.out.println("HQ WebSocket is not live!");
                     Main.finishedCmdExec = true;
