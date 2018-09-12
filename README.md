@@ -15,6 +15,10 @@ WIP
 Contact:
 Discord - @user/me#0001
 
+Contributers:
+jakecrowley 
+RobertoDraws (user/me#0001)
+
 Feel free to fork this project or to mess around in the code. If you have any questions about the code contact me on discord.
 
 If having trouble installing don't hesitate to send me a dm on discord.
