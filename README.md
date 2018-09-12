@@ -1,6 +1,6 @@
 Somethings are buggy but it gives a working HQ Java GUI capable ~10,000 accounts (as long as you have the bearers and open ports to connect).
 
-Installation: <br />1. Download IntelliJ (The Community Version is Free)<br />2. Make a new project from Version Control and connect to your github account to download.<br />3. Make a tokens.txt and input your bearer tokens there every new line is a new token.<br />4. Run Main.Java
+<!-- Installation: <br />1. Download IntelliJ (The Community Version is Free)<br />2. Make a new project from Version Control and connect to your github account to download.<br />3. Make a tokens.txt and input your bearer tokens there every new line is a new token.<br />4. Run Main.Java -->
 
 Requirements:<br />JDK 1.8
 
