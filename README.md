@@ -13,7 +13,7 @@ Requirements:<br />JDK 1.8
 
 Libraries:<br />WIP
 
-Contributers:<br />jakecrowley<br />RobertoDraws (user/me#0001)
+Contributers:<br />jakecrowley<br />RobertoDraws (users/me#0001)
 
 Feel free to fork this project or to mess around in the code. If you have any questions about the code contact me on discord.<br />If having trouble installing don't hesitate to send me a dm on discord.<br />This is for educational purposes only. This program violates HQ ToS if used on more than one account in a real broadcast.
 
